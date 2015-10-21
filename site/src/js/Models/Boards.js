@@ -15,11 +15,7 @@ $$.Model.Boards = class ModelBoards {
 
 		this._cacheNodes();
 
-		if (this.params.board_id) {
-			this._getBoard(this.params.board_id);
-		} else {
-			this._getBoards();
-		}
+		this._getBoards();
 	}
 
 	destroy () {
@@ -55,7 +51,7 @@ $$.Model.Boards = class ModelBoards {
 		"use strict";
 
 		return `<div class="col s12 m4">
-			         <div class="card blue-grey darken-1">
+			         <div class="card" style="background-color: ${data.prefs.backgroundColor}">
 					     <div class="card-content white-text">
 						     <span class="card-title">${data.name}</span>
 						     <p>${data.desc}</p>
@@ -70,22 +66,17 @@ $$.Model.Boards = class ModelBoards {
 	_getBoards () {
 		"use strict";
 
-		console.log(this.nodes);
-
 		return Trello.get('/members/me/boards').then((response) => {
 			this.boards = response;
 
 			_.where(this.boards, {closed: false}).forEach(board => {
-				console.log(board);
+				if (_.isEmpty(board.prefs.backgroundColor)) {
+					board.prefs.backgroundColor = '#546e7a';
+				}
 
 				this.nodes.content.append(this._templateBoards(board));
 			});
 		});
-	}
-
-	_getBoard (params) {
-		"use strict";
-		return Trello.get(`/boards/${params}`);
 	}
 };
 

@@ -10,6 +10,122 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+$$.Model.Board = (function () {
+	function ModelBoard() {
+		"use strict";
+
+		var root = arguments.length <= 0 || arguments[0] === undefined ? $('main') : arguments[0];
+		var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+		_classCallCheck(this, ModelBoard);
+
+		this.root = root === '' ? $('main') : root;
+		this.params = params;
+
+		this._template();
+		this.initialize();
+	}
+
+	_createClass(ModelBoard, [{
+		key: 'initialize',
+		value: function initialize() {
+			"use strict";
+			this.root.html(this.template);
+
+			this._cacheNodes();
+
+			this._getBoard(this.params.board_id);
+		}
+	}, {
+		key: 'destroy',
+		value: function destroy() {
+			"use strict";
+			console.log('destroy Boards');
+		}
+	}, {
+		key: '_template',
+		value: function _template() {
+			"use strict";
+			this.template = '\n\t\t\t\t<div class="row js-board">\n\t\t\t\t\t<div class="col s12 js-header"></div>\n\t\t\t\t\t<div class="col s12">\n\t\t\t\t\t\t<div class="row js-lists"></div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class="fixed-action-btn" style="bottom: 45px; right: 24px;">\n\t\t\t\t        <a class="btn-floating btn-large red">\n\t\t\t\t\t        <i class="large material-icons">add</i>\n\t\t\t\t\t    </a>\n\t\t\t\t\t    <ul>\n\t\t\t\t\t\t    <li><a class="btn-floating red"><i class="material-icons">insert_chart</i></i></a></li>\n\t\t\t\t\t\t\t<li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>\n\t\t\t\t\t\t\t<li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>\n\t\t\t\t\t\t\t<li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</div>\n\t\t\t\t</div>';
+		}
+	}, {
+		key: '_cacheNodes',
+		value: function _cacheNodes() {
+			"use strict";
+			this.nodes = {
+				content: this.root.find('.js-board'),
+				header: this.root.find('.js-header'),
+				lists: this.root.find('.js-lists')
+			};
+		}
+	}, {
+		key: '_templateHeader',
+		value: function _templateHeader(data) {
+			"use strict";
+
+			return '\n\t\t\t\t\t<div class="col s12 m4">\n\t\t\t\t\t\t<div class="card-panel grey lighten-5 z-depth-1">\n\t\t                    <div class="row valign-wrapper">\n\t\t\t\t\t            <div class="col s12">\n\t\t\t\t\t                <h5>' + data.name + '</h5>\n\t\t\t\t                    <span class="black-text">\n\t\t\t\t\t                    ' + data.desc + '\n\t\t\t\t\t                </span>\n\t\t\t\t\t            </div>\n\t\t\t\t            </div>\n\t\t\t\t        </div>\n\t\t\t        </div>';
+		}
+	}, {
+		key: '_templateBoard',
+		value: function _templateBoard(data) {
+			"use strict";
+
+			return '<div class="col s12 m4">\n\t\t\t         <div class="card blue-grey darken-1">\n\t\t\t\t\t     <div class="card-content white-text">\n\t\t\t\t\t\t     <span class="card-title">' + data.name + '</span>\n\t\t\t\t\t\t     <p>' + data.desc + '</p>\n\t\t\t\t\t     </div>\n\t\t\t\t\t     <div class="card-action right-align">\n\t\t\t\t\t\t     <a href="/boards/' + data.shortLink + '">Открыть</a>\n\t\t\t\t\t     </div>\n\t\t\t\t     </div>\n\t\t\t     </div>';
+		}
+	}, {
+		key: '_templateList',
+		value: function _templateList(data) {
+			"use strict";
+
+			return '<ul class="col s3 collection with-header"></ul>';
+		}
+	}, {
+		key: '_getLists',
+		value: function _getLists(params) {
+			"use strict";
+
+			var _this = this;
+
+			return Trello.get('/boards/' + params).then(function (response) {
+				_this.nodes.header.append(_this._templateHeader(response));
+
+				new $$.Model.List(_this.nodes.lists, params);
+			});
+		}
+	}, {
+		key: '_getLists',
+		value: function _getLists(params) {
+			"use strict";
+
+			var _this2 = this;
+
+			return Trello.get('/boards/' + params + '/lists').then(function (response) {
+				_this2.lists = response;
+
+				_.where(_this2.lists, { closed: false }).forEach(function (list) {
+					var template = $(_this2._templateList()).appendTo(_this2.nodes.lists);
+					template.append('<li class="collection-header"><h4>' + list.name + '</h4></li>');
+
+					Trello.get('/list/' + list.id + '/cards').then(function (response) {
+						_.where(response, { closed: false }).forEach(function (card) {
+							template.append('\n\t\t\t\t\t<li class="collection-item">\n\t\t\t\t\t\t<a href="/boards/' + params + '/' + card.id + '">\n\t\t\t\t\t\t\t' + card.name + '\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</li>');
+						});
+					});
+				});
+
+				//this.nodes.content.append(this._templateHeader(response));
+			});
+		}
+	}]);
+
+	return ModelBoard;
+})();;
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
 $$.Model.Boards = (function () {
 	function ModelBoards() {
 		"use strict";
@@ -34,11 +150,7 @@ $$.Model.Boards = (function () {
 
 			this._cacheNodes();
 
-			if (this.params.board_id) {
-				this._getBoard(this.params.board_id);
-			} else {
-				this._getBoards();
-			}
+			this._getBoards();
 		}
 	}, {
 		key: 'destroy',
@@ -65,7 +177,7 @@ $$.Model.Boards = (function () {
 		value: function _templateBoards(data) {
 			"use strict";
 
-			return '<div class="col s12 m4">\n\t\t\t         <div class="card blue-grey darken-1">\n\t\t\t\t\t     <div class="card-content white-text">\n\t\t\t\t\t\t     <span class="card-title">' + data.name + '</span>\n\t\t\t\t\t\t     <p>' + data.desc + '</p>\n\t\t\t\t\t     </div>\n\t\t\t\t\t     <div class="card-action right-align">\n\t\t\t\t\t\t     <a href="/boards/' + data.shortLink + '">Открыть</a>\n\t\t\t\t\t     </div>\n\t\t\t\t     </div>\n\t\t\t     </div>';
+			return '<div class="col s12 m4">\n\t\t\t         <div class="card" style="background-color: ' + data.prefs.backgroundColor + '">\n\t\t\t\t\t     <div class="card-content white-text">\n\t\t\t\t\t\t     <span class="card-title">' + data.name + '</span>\n\t\t\t\t\t\t     <p>' + data.desc + '</p>\n\t\t\t\t\t     </div>\n\t\t\t\t\t     <div class="card-action right-align">\n\t\t\t\t\t\t     <a href="/boards/' + data.shortLink + '">Открыть</a>\n\t\t\t\t\t     </div>\n\t\t\t\t     </div>\n\t\t\t     </div>';
 		}
 	}, {
 		key: '_getBoards',
@@ -74,27 +186,137 @@ $$.Model.Boards = (function () {
 
 			var _this = this;
 
-			console.log(this.nodes);
-
 			return Trello.get('/members/me/boards').then(function (response) {
 				_this.boards = response;
 
 				_.where(_this.boards, { closed: false }).forEach(function (board) {
-					console.log(board);
+					if (_.isEmpty(board.prefs.backgroundColor)) {
+						board.prefs.backgroundColor = '#546e7a';
+					}
 
 					_this.nodes.content.append(_this._templateBoards(board));
 				});
 			});
 		}
+	}]);
+
+	return ModelBoards;
+})();;
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+$$.Model.Board = (function () {
+	function ModelBoard() {
+		"use strict";
+
+		var root = arguments.length <= 0 || arguments[0] === undefined ? $('main') : arguments[0];
+		var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+		_classCallCheck(this, ModelBoard);
+
+		this.root = root === '' ? $('main') : root;
+		this.params = params;
+
+		this._template();
+		this.initialize();
+	}
+
+	_createClass(ModelBoard, [{
+		key: 'initialize',
+		value: function initialize() {
+			"use strict";
+			this.root.html(this.template);
+
+			this._cacheNodes();
+
+			this._getBoard(this.params.board_id);
+		}
+	}, {
+		key: 'destroy',
+		value: function destroy() {
+			"use strict";
+			console.log('destroy Boards');
+		}
+	}, {
+		key: '_template',
+		value: function _template() {
+			"use strict";
+			this.template = '\n\t\t\t\t<div class="row js-board">\n\t\t\t\t\t<div class="col s12 js-header"></div>\n\t\t\t\t\t<div class="col s12">\n\t\t\t\t\t\t<div class="row js-lists"></div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class="fixed-action-btn" style="bottom: 45px; right: 24px;">\n\t\t\t\t        <a class="btn-floating btn-large red">\n\t\t\t\t\t        <i class="large material-icons">add</i>\n\t\t\t\t\t    </a>\n\t\t\t\t\t    <ul>\n\t\t\t\t\t\t    <li><a class="btn-floating red"><i class="material-icons">insert_chart</i></i></a></li>\n\t\t\t\t\t\t\t<li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>\n\t\t\t\t\t\t\t<li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>\n\t\t\t\t\t\t\t<li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</div>\n\t\t\t\t</div>';
+		}
+	}, {
+		key: '_cacheNodes',
+		value: function _cacheNodes() {
+			"use strict";
+			this.nodes = {
+				content: this.root.find('.js-board'),
+				header: this.root.find('.js-header'),
+				lists: this.root.find('.js-lists')
+			};
+		}
+	}, {
+		key: '_templateHeader',
+		value: function _templateHeader(data) {
+			"use strict";
+
+			return '\n\t\t\t\t\t<div class="col s12 m4">\n\t\t\t\t\t\t<div class="card-panel grey lighten-5 z-depth-1">\n\t\t                    <div class="row valign-wrapper">\n\t\t\t\t\t            <div class="col s12">\n\t\t\t\t\t                <h5>' + data.name + '</h5>\n\t\t\t\t                    <span class="black-text">\n\t\t\t\t\t                    ' + data.desc + '\n\t\t\t\t\t                </span>\n\t\t\t\t\t            </div>\n\t\t\t\t            </div>\n\t\t\t\t        </div>\n\t\t\t        </div>';
+		}
+	}, {
+		key: '_templateBoard',
+		value: function _templateBoard(data) {
+			"use strict";
+
+			return '<div class="col s12 m4">\n\t\t\t         <div class="card blue-grey darken-1">\n\t\t\t\t\t     <div class="card-content white-text">\n\t\t\t\t\t\t     <span class="card-title">' + data.name + '</span>\n\t\t\t\t\t\t     <p>' + data.desc + '</p>\n\t\t\t\t\t     </div>\n\t\t\t\t\t     <div class="card-action right-align">\n\t\t\t\t\t\t     <a href="/boards/' + data.shortLink + '">Открыть</a>\n\t\t\t\t\t     </div>\n\t\t\t\t     </div>\n\t\t\t     </div>';
+		}
+	}, {
+		key: '_templateList',
+		value: function _templateList(data) {
+			"use strict";
+
+			return '<ul class="col s3 collection with-header"></ul>';
+		}
 	}, {
 		key: '_getBoard',
 		value: function _getBoard(params) {
 			"use strict";
-			return Trello.get('/boards/' + params);
+
+			var _this = this;
+
+			return Trello.get('/boards/' + params).then(function (response) {
+				_this.nodes.header.append(_this._templateHeader(response));
+
+				_this._getLists(params);
+			});
+		}
+	}, {
+		key: '_getLists',
+		value: function _getLists(params) {
+			"use strict";
+
+			var _this2 = this;
+
+			return Trello.get('/boards/' + params + '/lists').then(function (response) {
+				_this2.lists = response;
+
+				_.where(_this2.lists, { closed: false }).forEach(function (list) {
+					var template = $(_this2._templateList()).appendTo(_this2.nodes.lists);
+					template.append('<li class="collection-header"><h4>' + list.name + '</h4></li>');
+
+					Trello.get('/list/' + list.id + '/cards').then(function (response) {
+						_.where(response, { closed: false }).forEach(function (card) {
+							template.append('\n\t\t\t\t\t<li class="collection-item">\n\t\t\t\t\t\t<a href="/boards/' + params + '/' + card.id + '">\n\t\t\t\t\t\t\t' + card.name + '\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</li>');
+						});
+					});
+				});
+
+				//this.nodes.content.append(this._templateHeader(response));
+			});
 		}
 	}]);
 
-	return ModelBoards;
+	return ModelBoard;
 })();;
 'use strict';
 
@@ -139,6 +361,120 @@ $$.Model.Index = (function () {
 	}]);
 
 	return ModelIndex;
+})();;
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+$$.Model.List = (function () {
+	function ModelList() {
+		"use strict";
+
+		var root = arguments.length <= 0 || arguments[0] === undefined ? $('main') : arguments[0];
+		var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+		_classCallCheck(this, ModelList);
+
+		this.root = root === '' ? $('main') : root;
+		this.params = params;
+
+		this._template();
+		this.initialize();
+	}
+
+	_createClass(ModelList, [{
+		key: 'initialize',
+		value: function initialize() {
+			"use strict";
+			this.root.html(this.template);
+
+			this._cacheNodes();
+
+			this._getBoard(this.params.board_id);
+		}
+	}, {
+		key: 'destroy',
+		value: function destroy() {
+			"use strict";
+			console.log('destroy Boards');
+		}
+	}, {
+		key: '_template',
+		value: function _template() {
+			"use strict";
+			this.template = '<ul class="col s3 collection with-header"></ul>';
+		}
+	}, {
+		key: '_cacheNodes',
+		value: function _cacheNodes() {
+			"use strict";
+			this.nodes = {
+				lists: this.root.find('.js-lists')
+			};
+		}
+	}, {
+		key: '_templateHeader',
+		value: function _templateHeader(data) {
+			"use strict";
+
+			return '\t<div class="col s12 m4">\n\t\t\t\t\t\t<div class="card-panel grey lighten-5 z-depth-1">\n\t\t                    <div class="row valign-wrapper">\n\t\t\t\t\t            <div class="col s12">\n\t\t\t\t\t                <h5>' + data.name + '</h5>\n\t\t\t\t                    <span class="black-text">\n\t\t\t\t\t                    ' + data.desc + '\n\t\t\t\t\t                </span>\n\t\t\t\t\t            </div>\n\t\t\t\t            </div>\n\t\t\t\t        </div>\n\t\t\t        </div>';
+		}
+	}, {
+		key: '_templateBoard',
+		value: function _templateBoard(data) {
+			"use strict";
+
+			return '<div class="col s12 m4">\n\t\t\t         <div class="card blue-grey darken-1">\n\t\t\t\t\t     <div class="card-content white-text">\n\t\t\t\t\t\t     <span class="card-title">' + data.name + '</span>\n\t\t\t\t\t\t     <p>' + data.desc + '</p>\n\t\t\t\t\t     </div>\n\t\t\t\t\t     <div class="card-action right-align">\n\t\t\t\t\t\t     <a href="/boards/' + data.shortLink + '">Открыть</a>\n\t\t\t\t\t     </div>\n\t\t\t\t     </div>\n\t\t\t     </div>';
+		}
+	}, {
+		key: '_templateList',
+		value: function _templateList(data) {
+			"use strict";
+
+			return '<ul class="col s3 collection with-header"></ul>';
+		}
+	}, {
+		key: '_getBoard',
+		value: function _getBoard(params) {
+			"use strict";
+
+			var _this = this;
+
+			return Trello.get('/boards/' + params).then(function (response) {
+				_this.nodes.header.append(_this._templateHeader(response));
+
+				_this._getLists(params);
+			});
+		}
+	}, {
+		key: '_getLists',
+		value: function _getLists(params) {
+			"use strict";
+
+			var _this2 = this;
+
+			return Trello.get('/boards/' + params + '/lists').then(function (response) {
+				_this2.lists = response;
+
+				_.where(_this2.lists, { closed: false }).forEach(function (list) {
+					var template = $(_this2._templateList()).appendTo(_this2.nodes.lists);
+					template.append('<li class="collection-header"><h4>' + list.name + '</h4></li>');
+
+					Trello.get('/list/' + list.id + '/cards').then(function (response) {
+						_.where(response, { closed: false }).forEach(function (card) {
+							template.append('\n\t\t\t\t\t<li class="collection-item">\n\t\t\t\t\t\t<a href="/boards/' + params + '/' + card.id + '">\n\t\t\t\t\t\t\t' + card.name + '\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</li>');
+						});
+					});
+				});
+
+				//this.nodes.content.append(this._templateHeader(response));
+			});
+		}
+	}]);
+
+	return ModelList;
 })();;
 'use strict';
 
@@ -345,6 +681,10 @@ $$.Component.Route = (function () {
 			var pathname = options.pathname.split('/')[1];
 
 			var modelName = pathname.charAt(0).toUpperCase() + pathname.substr(1);
+
+			if (_.size(options.params)) {
+				modelName = modelName.slice(0, -1);
+			}
 
 			if (this.currentModel) {
 				this.currentModel.destroy();

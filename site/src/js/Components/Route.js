@@ -46,6 +46,10 @@ $$.Component.Route = class Route {
 
 		var modelName = pathname.charAt(0).toUpperCase() + pathname.substr(1);
 
+		if (_.size(options.params)) {
+			modelName = modelName.slice(0, -1);
+		}
+
 		if (this.currentModel) {
 			this.currentModel.destroy();
 		}
