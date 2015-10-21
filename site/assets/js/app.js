@@ -73,15 +73,8 @@ $$.Model.Board = (function () {
 			return '<div class="col s12 m4">\n\t\t\t         <div class="card blue-grey darken-1">\n\t\t\t\t\t     <div class="card-content white-text">\n\t\t\t\t\t\t     <span class="card-title">' + data.name + '</span>\n\t\t\t\t\t\t     <p>' + data.desc + '</p>\n\t\t\t\t\t     </div>\n\t\t\t\t\t     <div class="card-action right-align">\n\t\t\t\t\t\t     <a href="/boards/' + data.shortLink + '">Открыть</a>\n\t\t\t\t\t     </div>\n\t\t\t\t     </div>\n\t\t\t     </div>';
 		}
 	}, {
-		key: '_templateList',
-		value: function _templateList(data) {
-			"use strict";
-
-			return '<ul class="col s3 collection with-header"></ul>';
-		}
-	}, {
-		key: '_getLists',
-		value: function _getLists(params) {
+		key: '_getBoard',
+		value: function _getBoard(params) {
 			"use strict";
 
 			var _this = this;
@@ -92,30 +85,34 @@ $$.Model.Board = (function () {
 				new $$.Model.List(_this.nodes.lists, params);
 			});
 		}
-	}, {
-		key: '_getLists',
-		value: function _getLists(params) {
-			"use strict";
 
-			var _this2 = this;
-
-			return Trello.get('/boards/' + params + '/lists').then(function (response) {
-				_this2.lists = response;
-
-				_.where(_this2.lists, { closed: false }).forEach(function (list) {
-					var template = $(_this2._templateList()).appendTo(_this2.nodes.lists);
-					template.append('<li class="collection-header"><h4>' + list.name + '</h4></li>');
-
-					Trello.get('/list/' + list.id + '/cards').then(function (response) {
-						_.where(response, { closed: false }).forEach(function (card) {
-							template.append('\n\t\t\t\t\t<li class="collection-item">\n\t\t\t\t\t\t<a href="/boards/' + params + '/' + card.id + '">\n\t\t\t\t\t\t\t' + card.name + '\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</li>');
-						});
-					});
-				});
-
-				//this.nodes.content.append(this._templateHeader(response));
-			});
-		}
+		/*_getLists (params) {
+  	"use strict";
+  
+  	return Trello.get(`/boards/${params}/lists`).then((response) => {
+  		this.lists = response;
+  
+  
+  		_.where(this.lists, {closed: false}).forEach(list => {
+  			var template = $(this._templateList()).appendTo(this.nodes.lists);
+  			template.append(`<li class="collection-header"><h4>${list.name}</h4></li>`);
+  
+  			Trello.get(`/list/${list.id}/cards`).then((response) => {
+  				_.where(response, {closed: false}).forEach(card => {
+  					template.append(`
+  				<li class="collection-item">
+  					<a href="/boards/${params}/${card.id}">
+  						${card.name}
+  					</a>
+  				</li>`);
+  				});
+  			});
+  		});
+  
+  		//this.nodes.content.append(this._templateHeader(response));
+  
+  	});
+  }*/
 	}]);
 
 	return ModelBoard;
@@ -208,14 +205,14 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-$$.Model.Board = (function () {
-	function ModelBoard() {
+$$.Model.Card = (function () {
+	function ModelCard() {
 		"use strict";
 
 		var root = arguments.length <= 0 || arguments[0] === undefined ? $('main') : arguments[0];
 		var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-		_classCallCheck(this, ModelBoard);
+		_classCallCheck(this, ModelCard);
 
 		this.root = root === '' ? $('main') : root;
 		this.params = params;
@@ -224,15 +221,13 @@ $$.Model.Board = (function () {
 		this.initialize();
 	}
 
-	_createClass(ModelBoard, [{
+	_createClass(ModelCard, [{
 		key: 'initialize',
 		value: function initialize() {
 			"use strict";
-			this.root.html(this.template);
-
 			this._cacheNodes();
 
-			this._getBoard(this.params.board_id);
+			this._getCards(this.params);
 		}
 	}, {
 		key: 'destroy',
@@ -244,79 +239,39 @@ $$.Model.Board = (function () {
 		key: '_template',
 		value: function _template() {
 			"use strict";
-			this.template = '\n\t\t\t\t<div class="row js-board">\n\t\t\t\t\t<div class="col s12 js-header"></div>\n\t\t\t\t\t<div class="col s12">\n\t\t\t\t\t\t<div class="row js-lists"></div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class="fixed-action-btn" style="bottom: 45px; right: 24px;">\n\t\t\t\t        <a class="btn-floating btn-large red">\n\t\t\t\t\t        <i class="large material-icons">add</i>\n\t\t\t\t\t    </a>\n\t\t\t\t\t    <ul>\n\t\t\t\t\t\t    <li><a class="btn-floating red"><i class="material-icons">insert_chart</i></i></a></li>\n\t\t\t\t\t\t\t<li><a class="btn-floating yellow darken-1"><i class="material-icons">format_quote</i></a></li>\n\t\t\t\t\t\t\t<li><a class="btn-floating green"><i class="material-icons">publish</i></a></li>\n\t\t\t\t\t\t\t<li><a class="btn-floating blue"><i class="material-icons">attach_file</i></a></li>\n\t\t\t\t\t\t</ul>\n\t\t\t\t\t</div>\n\t\t\t\t</div>';
+			this.template = '';
 		}
 	}, {
 		key: '_cacheNodes',
 		value: function _cacheNodes() {
 			"use strict";
-			this.nodes = {
-				content: this.root.find('.js-board'),
-				header: this.root.find('.js-header'),
-				lists: this.root.find('.js-lists')
-			};
+			this.nodes = {};
 		}
 	}, {
-		key: '_templateHeader',
-		value: function _templateHeader(data) {
+		key: '_templateCard',
+		value: function _templateCard(data) {
 			"use strict";
 
-			return '\n\t\t\t\t\t<div class="col s12 m4">\n\t\t\t\t\t\t<div class="card-panel grey lighten-5 z-depth-1">\n\t\t                    <div class="row valign-wrapper">\n\t\t\t\t\t            <div class="col s12">\n\t\t\t\t\t                <h5>' + data.name + '</h5>\n\t\t\t\t                    <span class="black-text">\n\t\t\t\t\t                    ' + data.desc + '\n\t\t\t\t\t                </span>\n\t\t\t\t\t            </div>\n\t\t\t\t            </div>\n\t\t\t\t        </div>\n\t\t\t        </div>';
+			return '<li class="collection-item">\n\t\t\t\t\t<a href="/boards/' + this.params.board_id + '/' + data.id + '">\n\t\t\t\t\t\t' + data.name + '\n\t\t\t\t\t</a>\n\t\t\t\t</li>';
 		}
 	}, {
-		key: '_templateBoard',
-		value: function _templateBoard(data) {
-			"use strict";
-
-			return '<div class="col s12 m4">\n\t\t\t         <div class="card blue-grey darken-1">\n\t\t\t\t\t     <div class="card-content white-text">\n\t\t\t\t\t\t     <span class="card-title">' + data.name + '</span>\n\t\t\t\t\t\t     <p>' + data.desc + '</p>\n\t\t\t\t\t     </div>\n\t\t\t\t\t     <div class="card-action right-align">\n\t\t\t\t\t\t     <a href="/boards/' + data.shortLink + '">Открыть</a>\n\t\t\t\t\t     </div>\n\t\t\t\t     </div>\n\t\t\t     </div>';
-		}
-	}, {
-		key: '_templateList',
-		value: function _templateList(data) {
-			"use strict";
-
-			return '<ul class="col s3 collection with-header"></ul>';
-		}
-	}, {
-		key: '_getBoard',
-		value: function _getBoard(params) {
+		key: '_getCards',
+		value: function _getCards(params) {
 			"use strict";
 
 			var _this = this;
 
-			return Trello.get('/boards/' + params).then(function (response) {
-				_this.nodes.header.append(_this._templateHeader(response));
+			return Trello.get('/list/' + params.list_id + '/cards').then(function (response) {
+				_this.cards = response;
 
-				_this._getLists(params);
-			});
-		}
-	}, {
-		key: '_getLists',
-		value: function _getLists(params) {
-			"use strict";
-
-			var _this2 = this;
-
-			return Trello.get('/boards/' + params + '/lists').then(function (response) {
-				_this2.lists = response;
-
-				_.where(_this2.lists, { closed: false }).forEach(function (list) {
-					var template = $(_this2._templateList()).appendTo(_this2.nodes.lists);
-					template.append('<li class="collection-header"><h4>' + list.name + '</h4></li>');
-
-					Trello.get('/list/' + list.id + '/cards').then(function (response) {
-						_.where(response, { closed: false }).forEach(function (card) {
-							template.append('\n\t\t\t\t\t<li class="collection-item">\n\t\t\t\t\t\t<a href="/boards/' + params + '/' + card.id + '">\n\t\t\t\t\t\t\t' + card.name + '\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</li>');
-						});
-					});
+				_.where(_this.cards, { closed: false }).forEach(function (card) {
+					_this.root.append(_this._templateCard(card));
 				});
-
-				//this.nodes.content.append(this._templateHeader(response));
 			});
 		}
 	}]);
 
-	return ModelBoard;
+	return ModelCard;
 })();;
 'use strict';
 
@@ -392,7 +347,7 @@ $$.Model.List = (function () {
 
 			this._cacheNodes();
 
-			this._getBoard(this.params.board_id);
+			this._getLists(this.params);
 		}
 	}, {
 		key: 'destroy',
@@ -404,72 +359,53 @@ $$.Model.List = (function () {
 		key: '_template',
 		value: function _template() {
 			"use strict";
-			this.template = '<ul class="col s3 collection with-header"></ul>';
+			this.template = '';
 		}
 	}, {
 		key: '_cacheNodes',
 		value: function _cacheNodes() {
 			"use strict";
 			this.nodes = {
-				lists: this.root.find('.js-lists')
+				//lists: this.root.find('.js-lists')
 			};
 		}
 	}, {
-		key: '_templateHeader',
-		value: function _templateHeader(data) {
-			"use strict";
-
-			return '\t<div class="col s12 m4">\n\t\t\t\t\t\t<div class="card-panel grey lighten-5 z-depth-1">\n\t\t                    <div class="row valign-wrapper">\n\t\t\t\t\t            <div class="col s12">\n\t\t\t\t\t                <h5>' + data.name + '</h5>\n\t\t\t\t                    <span class="black-text">\n\t\t\t\t\t                    ' + data.desc + '\n\t\t\t\t\t                </span>\n\t\t\t\t\t            </div>\n\t\t\t\t            </div>\n\t\t\t\t        </div>\n\t\t\t        </div>';
-		}
-	}, {
-		key: '_templateBoard',
-		value: function _templateBoard(data) {
-			"use strict";
-
-			return '<div class="col s12 m4">\n\t\t\t         <div class="card blue-grey darken-1">\n\t\t\t\t\t     <div class="card-content white-text">\n\t\t\t\t\t\t     <span class="card-title">' + data.name + '</span>\n\t\t\t\t\t\t     <p>' + data.desc + '</p>\n\t\t\t\t\t     </div>\n\t\t\t\t\t     <div class="card-action right-align">\n\t\t\t\t\t\t     <a href="/boards/' + data.shortLink + '">Открыть</a>\n\t\t\t\t\t     </div>\n\t\t\t\t     </div>\n\t\t\t     </div>';
-		}
-	}, {
 		key: '_templateList',
-		value: function _templateList(data) {
+		value: function _templateList() {
 			"use strict";
 
 			return '<ul class="col s3 collection with-header"></ul>';
-		}
-	}, {
-		key: '_getBoard',
-		value: function _getBoard(params) {
-			"use strict";
-
-			var _this = this;
-
-			return Trello.get('/boards/' + params).then(function (response) {
-				_this.nodes.header.append(_this._templateHeader(response));
-
-				_this._getLists(params);
-			});
 		}
 	}, {
 		key: '_getLists',
 		value: function _getLists(params) {
 			"use strict";
 
-			var _this2 = this;
+			var _this = this;
 
 			return Trello.get('/boards/' + params + '/lists').then(function (response) {
-				_this2.lists = response;
+				_this.lists = response;
 
-				_.where(_this2.lists, { closed: false }).forEach(function (list) {
-					var template = $(_this2._templateList()).appendTo(_this2.nodes.lists);
+				_.where(_this.lists, { closed: false }).forEach(function (list) {
+					var template = $(_this._templateList()).appendTo(_this.root);
 					template.append('<li class="collection-header"><h4>' + list.name + '</h4></li>');
 
-					Trello.get('/list/' + list.id + '/cards').then(function (response) {
-						_.where(response, { closed: false }).forEach(function (card) {
-							template.append('\n\t\t\t\t\t<li class="collection-item">\n\t\t\t\t\t\t<a href="/boards/' + params + '/' + card.id + '">\n\t\t\t\t\t\t\t' + card.name + '\n\t\t\t\t\t\t</a>\n\t\t\t\t\t</li>');
-						});
+					new $$.Model.Card(template, {
+						board_id: params,
+						list_id: list.id
 					});
-				});
 
-				//this.nodes.content.append(this._templateHeader(response));
+					/*Trello.get(`/list/${list.id}/cards`).then((response) => {
+      _.where(response, {closed: false}).forEach(card => {
+      template.append(`
+      <li class="collection-item">
+      <a href="/boards/${params}/${card.id}">
+      ${card.name}
+      </a>
+      </li>`);
+      });
+      });*/
+				});
 			});
 		}
 	}]);

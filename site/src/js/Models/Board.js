@@ -89,13 +89,7 @@ $$.Model.Board = class ModelBoard {
 			     </div>`
 	}
 
-	_templateList (data) {
-		"use strict";
-
-		return `<ul class="col s3 collection with-header"></ul>`;
-	}
-
-	_getLists (params) {
+	_getBoard (params) {
 		"use strict";
 
 		return Trello.get(`/boards/${params}`).then((response) => {
@@ -105,7 +99,7 @@ $$.Model.Board = class ModelBoard {
 		});
 	}
 
-	_getLists (params) {
+	/*_getLists (params) {
 		"use strict";
 
 		return Trello.get(`/boards/${params}/lists`).then((response) => {
@@ -131,7 +125,7 @@ $$.Model.Board = class ModelBoard {
 			//this.nodes.content.append(this._templateHeader(response));
 
 		});
-	}
+	}*/
 };
 
 
