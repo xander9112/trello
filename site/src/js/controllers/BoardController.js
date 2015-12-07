@@ -3,7 +3,11 @@ var BoardController = function ($scope, $state, TrelloFactory) {
 
 	$scope.board = TrelloFactory.boards.id.get({ id: $state.params.board }, function () {
 		$scope.board.id = _.last($scope.board.shortUrl.split('/'));
+
+		$scope.lists = TrelloFactory.boards.lists.query({ id: $state.params.board }, function () {
+			$scope.$parent.loadingPage = false;
+		});
 	});
 
-	$scope.lists = TrelloFactory.boards.lists.query({ id: $state.params.board });
+
 };

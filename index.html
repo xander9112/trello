@@ -10,21 +10,26 @@
 	<title>Trello</title>
 	<link rel="stylesheet" type="text/css" href="/site/assets/css/style.css">
 </head>
-<body>
+<body ng-controller="MainController">
 <header>
 	<div class="ui inverted segment b-main-menu">
 		<div class="ui inverted secondary pointing menu">
 			<a ui-sref="/" ui-sref-active="active" class="item">Главная</a>
 			<a ui-sref="boards" ui-sref-active="active" class="item">Доски</a>
-			<!--<div class="ui inverted secondary pointing right menu">
-				<a ui-sref="/" ui-sref-active="active" class="item">Пользователь</a>
+
+			<div class="ui inverted secondary pointing right menu">
+				<a ui-sref="/user/:id({id: 'me'})" ui-sref-active="active" class="item">{{me.fullName}}</a>
 				<a ui-sref="logout" ui-sref-active="active" class="item">Logout</a>
-			</div>-->
+			</div>
 		</div>
 	</div>
 </header>
-<main role="main" ng-controller="MainController">
-	<div ui-view></div>
+<main role="main">
+	<div class="ui grid">
+		<div class="sixteen wide column">
+			<div ui-view></div>
+		</div>
+	</div>
 	<div class="ui dimmer" ng-class="loadingPage ? 'active' : ''">
 		<div class="ui large text loader">Loading</div>
 	</div>

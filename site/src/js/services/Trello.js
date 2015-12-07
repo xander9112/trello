@@ -1,10 +1,18 @@
 var TrelloFactory = function ($resource, $localStorage) {
 	"use strict";
-	var resource = function (url) {
-		return $resource(`https://api.trello.com/1/${url}`, {
+
+	var resource = function (action, params, method) {
+
+		var method = method || {};
+
+		var options = {
 			key:   $localStorage.key,
 			token: $localStorage.token
-		})
+		};
+
+		_.assign(options, params);
+
+		return $resource(`https://api.trello.com/1/${action}`, options, method)
 	};
 
 	return {
@@ -74,13 +82,22 @@ var TrelloFactory = function ($resource, $localStorage) {
 		 */
 
 		boards: {
-			self:    resource('boards', {}, {
-				method: 'POST'
-			}),
-			id:      resource('boards/:id'),
-			field:   resource('boards/:id/:field'),
-			actions: resource('boards/:id/actions'),
-			lists:   resource('boards/:id/lists')
+			self:       $resource('testJson.json'),
+			/*			self:       resource('boards', {}, {
+			 method: 'POST'
+			 }),*/
+			id:         resource('boards/:id', { id: '@id' }),
+			field:      resource('boards/:id/:field'),
+			actions:    resource('boards/:id/actions'),
+			lists:      resource('boards/:id/lists', { id: '@id' }),
+			labels:     resource('boards/:id/labels', { id: '@id' }),
+			labelsId:   resource('boards/:id/labels/:idLabel', { id: '@id' }),
+			labelNames: resource('boards/:id/labelNames/:labelName',
+				{
+					id: '@id', labelName: '@labelName'
+				}, {
+					'update': { method: 'PUT' }
+				})
 
 		},
 
@@ -95,11 +112,17 @@ var TrelloFactory = function ($resource, $localStorage) {
 		 */
 
 		lists: {
-			id:      resource('lists/:id'),
-			field:   resource('lists/:id/:field'),
-			actions: resource('lists/:id/actions'),
-			board:   resource('lists/:id/board'),
-			cards:   resource('lists/:id/cards')
+			id:          resource('lists/:id'),
+			field:       resource('lists/:id/:field'),
+			actions:     resource('lists/:id/actions'),
+			board:       resource('lists/:id/board'),
+			cards:       resource('lists/:id/cards'),
+			listsClosed: resource('/lists/:idList/closed',
+				{
+					idList: '@idList'
+				}, {
+					'update': { method: 'PUT' }
+				})
 		},
 
 		/**
@@ -152,6 +175,10 @@ var TrelloFactory = function ($resource, $localStorage) {
 			id:    resource('actions/:id'),
 			field: resource('actions/:id/:field'),
 			board: resource('actions/:id/board')
+		},
+
+		labels: {
+			id: resource('labels/:idLabel', { idLabel: '@idLabel' })
 		}
 	}
 };

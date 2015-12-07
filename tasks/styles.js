@@ -9,6 +9,7 @@ var production = require('../gulpfile');
 
 gulp.task('styles', function () {
 	return gulp.src([
+		'site/src/vendor/semantic/dist/semantic.css',
 		'site/src/styles/**/*.less'
 	])
 		.pipe(less())

@@ -8,6 +8,11 @@ var Router = function ($stateProvider, $urlRouterProvider, $locationProvider) {
 			url:         '/',
 			templateUrl: '/views/MainPage.html'
 		})
+		.state('/user/:id', {
+			url:         '/user/:id',
+			templateUrl: '/views/UserPage.html',
+			controller:  'UserController'
+		})
 		.state('boards', {
 			url:   '/boards',
 			views: {
@@ -16,8 +21,8 @@ var Router = function ($stateProvider, $urlRouterProvider, $locationProvider) {
 					controller:  'BoardsController'
 				},
 				'create@boards': {
-					templateUrl: '/views/boards/create.html'
-					//controller:  'BoardsController'
+					templateUrl: '/views/boards/create.html',
+					controller:  'BoardCreateController'
 				}
 			}
 		})

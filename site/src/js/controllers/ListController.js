@@ -24,5 +24,7 @@ var ListController = function ($scope, $state, TrelloFactory, moment) {
 				});
 			});
 		}
+
+		$scope.$parent.loadingPage = false;
 	});
 };

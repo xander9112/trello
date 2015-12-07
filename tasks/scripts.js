@@ -17,6 +17,7 @@ gulp.task('scripts.app', function () {
 		'site/src/js/directives/*.js',
 		'site/src/js/controllers/*.js',
 		'site/src/js/Router.js',
+		'site/src/js/Config.js',
 		'site/src/js/Application.js'
 	])
 		.pipe(plumber())
@@ -31,6 +32,7 @@ gulp.task('scripts.app', function () {
 gulp.task('scripts.vendor', function () {
 	return gulp.src([
 		'site/src/vendor/jquery-2.1.4.min.js',
+		'site/src/vendor/semantic/dist/semantic.js',
 		'site/src/vendor/angular/angular.js',
 		'site/src/vendor/moment-with-locales.js',
 		'site/src/vendor/marked..js',

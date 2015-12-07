@@ -88,11 +88,19 @@
 
 var TrelloFactory = function TrelloFactory($resource, $localStorage) {
 	"use strict";
-	var resource = function resource(url) {
-		return $resource('https://api.trello.com/1/' + url, {
+
+	var resource = function resource(action, params, method) {
+
+		var method = method || {};
+
+		var options = {
 			key: $localStorage.key,
 			token: $localStorage.token
-		});
+		};
+
+		_.assign(options, params);
+
+		return $resource('https://api.trello.com/1/' + action, options, method);
 	};
 
 	return {
@@ -162,13 +170,21 @@ var TrelloFactory = function TrelloFactory($resource, $localStorage) {
    */
 
 		boards: {
-			self: resource('boards', {}, {
-				method: 'POST'
-			}),
-			id: resource('boards/:id'),
+			self: $resource('testJson.json'),
+			/*			self:       resource('boards', {}, {
+    method: 'POST'
+    }),*/
+			id: resource('boards/:id', { id: '@id' }),
 			field: resource('boards/:id/:field'),
 			actions: resource('boards/:id/actions'),
-			lists: resource('boards/:id/lists')
+			lists: resource('boards/:id/lists', { id: '@id' }),
+			labels: resource('boards/:id/labels', { id: '@id' }),
+			labelsId: resource('boards/:id/labels/:idLabel', { id: '@id' }),
+			labelNames: resource('boards/:id/labelNames/:labelName', {
+				id: '@id', labelName: '@labelName'
+			}, {
+				'update': { method: 'PUT' }
+			})
 
 		},
 
@@ -187,7 +203,12 @@ var TrelloFactory = function TrelloFactory($resource, $localStorage) {
 			field: resource('lists/:id/:field'),
 			actions: resource('lists/:id/actions'),
 			board: resource('lists/:id/board'),
-			cards: resource('lists/:id/cards')
+			cards: resource('lists/:id/cards'),
+			listsClosed: resource('/lists/:idList/closed', {
+				idList: '@idList'
+			}, {
+				'update': { method: 'PUT' }
+			})
 		},
 
 		/**
@@ -240,6 +261,10 @@ var TrelloFactory = function TrelloFactory($resource, $localStorage) {
 			id: resource('actions/:id'),
 			field: resource('actions/:id/:field'),
 			board: resource('actions/:id/board')
+		},
+
+		labels: {
+			id: resource('labels/:idLabel', { idLabel: '@idLabel' })
 		}
 	};
 };
@@ -337,15 +362,16 @@ var BoardController = function BoardController($scope, $state, TrelloFactory) {
 
 	$scope.board = TrelloFactory.boards.id.get({ id: $state.params.board }, function () {
 		$scope.board.id = _.last($scope.board.shortUrl.split('/'));
-	});
 
-	$scope.lists = TrelloFactory.boards.lists.query({ id: $state.params.board });
+		$scope.lists = TrelloFactory.boards.lists.query({ id: $state.params.board }, function () {
+			$scope.$parent.loadingPage = false;
+		});
+	});
 };
 'use strict';
 
-var BoardsController = function BoardsController($scope, TrelloFactory) {
+var BoardCreateController = function BoardCreateController($scope, $state, TrelloFactory, LabelNames, DefaultLists) {
 	"use strict";
-	$scope.showClosed = false;
 
 	$scope.CreateBoard = function (event) {
 		event.preventDefault();
@@ -360,21 +386,68 @@ var BoardsController = function BoardsController($scope, TrelloFactory) {
 			}
 
 		});
-
-		/*var board = new TrelloFactory.boards.self();
-   board.name = 'Тестовая таблицы';
-   console.log(board.$save());*/
 	};
 
 	$scope.SaveBoard = function (event) {
 		var board = new TrelloFactory.boards.self();
 
-		console.log(board);
+		var form = $scope.CreatingBoard;
+
+		if (form.$valid) {
+			board.name = form.boardName.$viewValue;
+
+			board.$save().then(function (data) {
+				TrelloFactory.boards.labels.query({ id: data.id }).$promise.then(function (data) {
+					angular.forEach(data, function (value) {
+						var NewLabel = new TrelloFactory.labels.id({ idLabel: value.id });
+						NewLabel.$delete();
+					});
+				});
+
+				TrelloFactory.boards.lists.query({ id: data.id }).$promise.then(function (data) {
+					angular.forEach(data, function (value) {
+						var List = new TrelloFactory.lists.listsClosed({ idList: value.id });
+						List.value = true;
+						List.$update();
+					});
+				});
+
+				angular.forEach(LabelNames, function (value, key) {
+					if (LabelNames[key] !== '') {
+						var NewLabel = new TrelloFactory.boards.labels({ id: data.id });
+
+						NewLabel.name = value;
+						NewLabel.color = key;
+
+						NewLabel.$save();
+					}
+				});
+
+				angular.forEach(DefaultLists, function (value) {
+					var newList = new TrelloFactory.boards.lists({ id: data.id });
+					newList.name = value.name;
+					newList.pos = value.pos;
+
+					newList.$save();
+				});
+			});
+		} else {}
+
+		/*if (FormName.name.$viewValue.length < 3) {
+   FormName.name.$valid = false;
+   }*/
+		//console.log(board);
 	};
+};
+"use strict";
+
+var BoardsController = function BoardsController($scope, TrelloFactory) {
+	"use strict";
+	$scope.showClosed = false;
 
 	TrelloFactory.members.boards.query({ id: 'me' }, function (data) {
 		$scope.boards = _.where(data, { closed: false });
-
+		$scope.$parent.loadingPage = false;
 		/*angular.forEach($scope.boards, function (board) {
    board.members = [];
   		 angular.forEach(board.memberships, function (membership) {
@@ -394,38 +467,44 @@ var CardController = function CardController($scope, $state, TrelloFactory, mome
 			$state.go('/:board.list');
 		},
 		onHidden: function onHidden() {
+			//$scope.$parent.loadingPage = false;
 			angular.element('.js-card-template').remove();
 		}
 
 	});
 
-	TrelloFactory.cards.id.get({ id: $state.params.card }, function (data) {
+	TrelloFactory.cards.id.get({ id: $state.params.card }).$promise.then(function (data) {
 		$scope.card = data;
 		$scope.card.members = [];
-		//console.log(data);
 
-		//console.log('Разница в ', dateB.diff(dateC), 'миллисекунд');
-		//console.log('Разница в ', dateB.diff(dateC, 'hours'), 'часов');
-
-		//console.log(amMoment.preprocessDate(data.due));
 		angular.forEach($scope.card.idMembers, function (idMember) {
 			$scope.card.members.push(TrelloFactory.members.id.get({ id: idMember }));
 		});
-	});
 
-	$scope.cardAttachments = TrelloFactory.cards.attachments.query({ id: $state.params.card });
-	$scope.cardChecklists = TrelloFactory.cards.checklists.query({ id: $state.params.card });
+		return TrelloFactory.cards.attachments.query({ id: $state.params.card }).$promise;
+	}).then(function (data) {
+		$scope.cardAttachments = data;
 
-	TrelloFactory.cards.actions.query({ id: $state.params.card }, function (data) {
+		return TrelloFactory.cards.checklists.query({ id: $state.params.card }).$promise;
+	}).then(function (data) {
+		$scope.cardChecklists = data;
+
+		return TrelloFactory.cards.actions.query({ id: $state.params.card }).$promise;
+	}).then(function (data) {
 		$scope.cardActions = _.where(data, { type: "commentCard" });
+		$scope.comments = false;
 
-		$scope.comments = [];
+		if ($scope.cardActions.length) {
+			$scope.comments = [];
 
-		angular.forEach($scope.cardActions, function (action) {
-			TrelloFactory.actions.id.get({ id: action.id }, function (data) {
-				$scope.comments.push(data);
+			angular.forEach($scope.cardActions, function (action) {
+				TrelloFactory.actions.id.get({ id: action.id }, function (data) {
+					$scope.comments.push(data);
+				});
 			});
-		});
+		}
+
+		$scope.$parent.loadingPage = false;
 	});
 };
 'use strict';
@@ -456,11 +535,13 @@ var ListController = function ListController($scope, $state, TrelloFactory, mome
 				});
 			});
 		}
+
+		$scope.$parent.loadingPage = false;
 	});
 };
 'use strict';
 
-var MainController = function MainController($rootScope, $scope, $localStorage, $websocket) {
+var MainController = function MainController($rootScope, $scope, $localStorage, $websocket, TrelloFactory) {
 	"use strict";
 
 	$rootScope.$on('$stateChangeStart', function (ev) {
@@ -510,6 +591,10 @@ var MainController = function MainController($rootScope, $scope, $localStorage, 
 		}
 	}
 
+	TrelloFactory.members.id.get({ id: 'me' }, function (data) {
+		$scope.me = data;
+	});
+
 	/*var ws = $websocket.$new(`wss://api.trello.com/1/sessions/socket?token=${$localStorage.token}`); // instance of ngWebsocket, handled by $websocket service
  
   ws.$on('$open', function () {
@@ -544,6 +629,17 @@ var MainController = function MainController($rootScope, $scope, $localStorage, 
   console.log('Noooooooooou, I want to have more fun with ngWebsocket, damn it!');
   });*/
 };
+"use strict";
+
+var UserController = function UserController($rootScope, $scope, $localStorage, $state, TrelloFactory) {
+	"use strict";
+	console.log($state.params);
+	TrelloFactory.members.id.get({ id: $state.params.id }, function (data) {
+		$scope.user = data;
+
+		console.log($scope.user);
+	});
+};
 'use strict';
 
 var Router = function Router($stateProvider, $urlRouterProvider, $locationProvider) {
@@ -554,6 +650,10 @@ var Router = function Router($stateProvider, $urlRouterProvider, $locationProvid
 	$stateProvider.state('/', {
 		url: '/',
 		templateUrl: '/views/MainPage.html'
+	}).state('/user/:id', {
+		url: '/user/:id',
+		templateUrl: '/views/UserPage.html',
+		controller: 'UserController'
 	}).state('boards', {
 		url: '/boards',
 		views: {
@@ -562,8 +662,8 @@ var Router = function Router($stateProvider, $urlRouterProvider, $locationProvid
 				controller: 'BoardsController'
 			},
 			'create@boards': {
-				templateUrl: '/views/boards/create.html'
-				//controller:  'BoardsController'
+				templateUrl: '/views/boards/create.html',
+				controller: 'BoardCreateController'
 			}
 		}
 	}).state('/:board', {
@@ -584,11 +684,59 @@ var Router = function Router($stateProvider, $urlRouterProvider, $locationProvid
 		}
 	});
 };
+/**
+ * green - Backend
+ * yellow - Общие задачи
+ * orange - Frontend
+ * red - Design
+ * purple - Проверено
+ * blue
+ * sky
+ * lime - Сделано
+ * pink
+ * black - Баг
+ */
+
+'use strict';
+
+var LabelNames = {
+	green: 'Backend',
+	yellow: 'Общие задачи',
+	orange: 'Frontend',
+	red: 'Design',
+	purple: 'Проверено',
+	blue: '',
+	sky: '',
+	lime: 'Сделано',
+	pink: '',
+	black: 'Баг'
+};
+
+var DefaultLists = [{
+	name: 'Задачи',
+	pos: 1
+}, {
+	name: 'В работе',
+	pos: 2
+}, {
+	name: 'Баги',
+	pos: 3
+}, {
+	name: 'На тестовом',
+	pos: 4
+}, {
+	name: 'На продакшене',
+	pos: 5
+}, {
+	name: 'Информация',
+	pos: 6
+}];
 'use strict';
 
 var App = angular.module('Application', ['ngResource', 'ui.router', 'ngStorage', 'angularMoment', 'hc.marked', 'ngWebsocket'], function ($httpProvider) {
 	"use strict";
 	$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+	$httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 	$httpProvider.defaults.transformRequest = [function (data) {
 		var param = function param(obj) {
 			var query = '';
@@ -628,19 +776,40 @@ var App = angular.module('Application', ['ngResource', 'ui.router', 'ngStorage',
 });
 
 App.config(Router);
-App.config(['$localStorageProvider', function ($localStorageProvider) {
+App.config(function ($localStorageProvider) {
 	$localStorageProvider.setKeyPrefix('trello_api_');
-}]);
+});
 
-App.config(['$resourceProvider', function ($resourceProvider) {
+App.config(function ($resourceProvider) {
 	// Don't strip trailing slashes from calculated URLs
 	//console.log($resourceProvider);
 	$resourceProvider.defaults.stripTrailingSlashes = false;
-}]);
+});
+
+/**
+ * green - Backend
+ * yellow - Общие задачи
+ * orange - Frontend
+ * red - Design
+ * purple - Проверено
+ * blue
+ * sky
+ * lime - Сделано
+ * pink
+ * black - Баг
+ *
+ * @param event
+ * @constructor
+ */
+
+App.constant('LabelNames', LabelNames);
+App.constant('DefaultLists', DefaultLists);
 
 App.controller('MainController', MainController);
+App.controller('UserController', UserController);
 App.controller('BoardsController', BoardsController);
 App.controller('BoardController', BoardController);
+App.controller('BoardCreateController', BoardCreateController);
 App.controller('ListController', ListController);
 App.controller('CardController', CardController);
 
@@ -649,14 +818,4 @@ App.factory("TrelloFactory", TrelloFactory);
 App.directive('repeatDone', repeatDone);
 
 App.directive('cardTemplate', CardTemplate);
-
-//App.directive('stringDir', FieldTypes.StringDir);
-//App.directive('booleanDir', FieldTypes.BooleanDir);
-//App.directive('urlDir', FieldTypes.UrlDir);
-//App.directive('textDir', FieldTypes.TextDir);
-//App.directive('dateDir', FieldTypes.DateDir);
-
-//App.directive('fieldTypes', FieldTypes.FieldTypes);
-
-//App.directive('addButton', Components.Semantic.AddButton);
 //# sourceMappingURL=app.js.map

@@ -1,4 +1,4 @@
-var MainController = function ($rootScope, $scope, $localStorage, $websocket) {
+var MainController = function ($rootScope, $scope, $localStorage, $websocket, TrelloFactory) {
 	"use strict";
 
 	$rootScope.$on('$stateChangeStart', function (ev) {
@@ -47,6 +47,10 @@ var MainController = function ($rootScope, $scope, $localStorage, $websocket) {
 			$localStorage.token = Trello.token();
 		}
 	}
+
+	TrelloFactory.members.id.get({ id: 'me' }, function (data) {
+		$scope.me = data;
+	});
 
 	/*var ws = $websocket.$new(`wss://api.trello.com/1/sessions/socket?token=${$localStorage.token}`); // instance of ngWebsocket, handled by $websocket service
 

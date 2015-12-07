@@ -1,0 +1,201 @@
+{
+  "id": "5665933b7f626091266db93e",
+  "name": "fasa",
+  "desc": "",
+  "descData": null,
+  "closed": false,
+  "idOrganization": null,
+  "invited": false,
+  "pinned": false,
+  "starred": false,
+  "url": "https://trello.com/b/fx3fz56u/fasa",
+  "prefs": {
+    "permissionLevel": "private",
+    "voting": "disabled",
+    "comments": "members",
+    "invitations": "members",
+    "selfJoin": true,
+    "cardCovers": true,
+    "cardAging": "regular",
+    "calendarFeedEnabled": false,
+    "background": "blue",
+    "backgroundColor": "#0079BF",
+    "backgroundImage": null,
+    "backgroundImageScaled": null,
+    "backgroundTile": false,
+    "backgroundBrightness": "unknown",
+    "canBePublic": true,
+    "canBeOrg": true,
+    "canBePrivate": true,
+    "canInvite": true
+  },
+  "invitations": [],
+  "memberships": [
+    {
+      "id": "5665933b7f626091266db942",
+      "idMember": "5266308bdb6f33884e0020b2",
+      "memberType": "admin",
+      "unconfirmed": false,
+      "deactivated": false
+    }
+  ],
+  "shortLink": "fx3fz56u",
+  "subscribed": false,
+  "labelNames": {
+    "green": "",
+    "yellow": "",
+    "orange": "",
+    "red": "",
+    "purple": "",
+    "blue": "",
+    "sky": "",
+    "lime": "",
+    "pink": "",
+    "black": ""
+  },
+  "powerUps": [],
+  "dateLastActivity": "2015-12-07T14:51:20.802Z",
+  "dateLastView": "2015-12-07T15:06:48.902Z",
+  "shortUrl": "https://trello.com/b/fx3fz56u",
+  "idTags": [],
+  "labels": [],
+  "checklists": [],
+  "cards": [
+    {
+      "id": "56659ce57735f84f175152d7",
+      "checkItemStates": [],
+      "closed": false,
+      "dateLastActivity": "2015-12-07T14:51:20.802Z",
+      "desc": "",
+      "descData": null,
+      "idBoard": "5665933b7f626091266db93e",
+      "idList": "5665933b7f626091266db93f",
+      "idMembersVoted": [],
+      "idShort": 1,
+      "idAttachmentCover": null,
+      "manualCoverAttachment": false,
+      "idLabels": [],
+      "name": "sdgdgs",
+      "pos": 65535,
+      "shortLink": "eoknXyGq",
+      "badges": {
+        "votes": 0,
+        "viewingMemberVoted": false,
+        "subscribed": false,
+        "fogbugz": "",
+        "checkItems": 0,
+        "checkItemsChecked": 0,
+        "comments": 0,
+        "attachments": 0,
+        "description": false,
+        "due": null
+      },
+      "due": null,
+      "email": "xander91+5266308bdb6f33884e0020b2+56659ce57735f84f175152d7+84f28771660787d744527e79cf10232b44ea2ba4@boards.trello.com",
+      "idChecklists": [],
+      "idMembers": [],
+      "labels": [],
+      "shortUrl": "https://trello.com/c/eoknXyGq",
+      "subscribed": false,
+      "url": "https://trello.com/c/eoknXyGq/1-sdgdgs",
+      "attachments": []
+    }
+  ],
+  "members": [
+    {
+      "id": "5266308bdb6f33884e0020b2",
+      "avatarHash": "992ef3499dc06bf4dcaceb7b9fbd71cf",
+      "bio": "I'm Front-end developer.",
+      "bioData": {
+        "emoji": {}
+      },
+      "confirmed": true,
+      "fullName": "Александр Фурманчук",
+      "idPremOrgsAdmin": [],
+      "initials": "AF",
+      "memberType": "normal",
+      "products": [],
+      "status": "disconnected",
+      "url": "https://trello.com/xander91",
+      "username": "xander91"
+    }
+  ],
+  "lists": [
+    {
+      "id": "5665933b7f626091266db93f",
+      "name": "To Do",
+      "closed": false,
+      "idBoard": "5665933b7f626091266db93e",
+      "pos": 16384,
+      "subscribed": false
+    },
+    {
+      "id": "5665933b7f626091266db940",
+      "name": "Doing",
+      "closed": false,
+      "idBoard": "5665933b7f626091266db93e",
+      "pos": 32768,
+      "subscribed": false
+    },
+    {
+      "id": "5665933b7f626091266db941",
+      "name": "Done",
+      "closed": false,
+      "idBoard": "5665933b7f626091266db93e",
+      "pos": 49152,
+      "subscribed": false
+    }
+  ],
+  "actions": [
+    {
+      "id": "56659ce57735f84f175152d9",
+      "idMemberCreator": "5266308bdb6f33884e0020b2",
+      "data": {
+        "board": {
+          "shortLink": "fx3fz56u",
+          "name": "fasa",
+          "id": "5665933b7f626091266db93e"
+        },
+        "list": {
+          "name": "To Do",
+          "id": "5665933b7f626091266db93f"
+        },
+        "card": {
+          "shortLink": "eoknXyGq",
+          "idShort": 1,
+          "name": "sdgdgs",
+          "id": "56659ce57735f84f175152d7"
+        }
+      },
+      "type": "createCard",
+      "date": "2015-12-07T14:51:17.259Z",
+      "memberCreator": {
+        "id": "5266308bdb6f33884e0020b2",
+        "avatarHash": "992ef3499dc06bf4dcaceb7b9fbd71cf",
+        "fullName": "Александр Фурманчук",
+        "initials": "AF",
+        "username": "xander91"
+      }
+    },
+    {
+      "id": "5665933b7f626091266db943",
+      "idMemberCreator": "5266308bdb6f33884e0020b2",
+      "data": {
+        "board": {
+          "shortLink": "fx3fz56u",
+          "name": "fasa",
+          "id": "5665933b7f626091266db93e"
+        }
+      },
+      "type": "createBoard",
+      "date": "2015-12-07T14:10:03.653Z",
+      "memberCreator": {
+        "id": "5266308bdb6f33884e0020b2",
+        "avatarHash": "992ef3499dc06bf4dcaceb7b9fbd71cf",
+        "fullName": "Александр Фурманчук",
+        "initials": "AF",
+        "username": "xander91"
+      }
+    }
+  ]
+}

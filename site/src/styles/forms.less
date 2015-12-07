@@ -1,0 +1,266 @@
+@import '../vendor/semantic/src/definitions/collections/form';
+
+/*--------------------
+        Success
+---------------------*/
+
+/* On Form */
+.ui.form.ng-valid .success.message:not(:empty) {
+	display: block;
+}
+
+.ui.form.ng-valid .icon.success.message:not(:empty) {
+	display: flex;
+}
+
+/*--------------------
+        Warning
+---------------------*/
+
+/* On Form */
+.ui.form.warning .warning.message:not(:empty) {
+	display: block;
+}
+
+.ui.form.warning .icon.warning.message:not(:empty) {
+	display: flex;
+}
+
+/*--------------------
+        Error
+---------------------*/
+
+/* On Form */
+.ui.form.ng-dirty.ng-invalid .error.message:not(:empty) {
+	display: block;
+}
+
+.ui.form.ng-dirty.ng-invalid .icon.error.message:not(:empty) {
+	display: flex;
+}
+
+/* On Field(s) */
+.ui.form .fields.ng-dirty.ng-invalid .field label,
+.ui.form .field.ng-dirty.ng-invalid label,
+.ui.form .fields.ng-dirty.ng-invalid .field .input,
+.ui.form .field.ng-dirty.ng-invalid .input {
+	color: @formErrorColor;
+}
+
+.ui.form .fields.ng-dirty.ng-invalid .field .corner.label,
+.ui.form .field.ng-dirty.ng-invalid .corner.label {
+	border-color: @formErrorColor;
+	color: @white;
+}
+
+.ui.form .fields.ng-dirty.ng-invalid .field textarea,
+.ui.form .fields.ng-dirty.ng-invalid .field select,
+.ui.form .fields.ng-dirty.ng-invalid .field input:not([type]),
+.ui.form .fields.ng-dirty.ng-invalid .field input[type="date"],
+.ui.form .fields.ng-dirty.ng-invalid .field input[type="datetime-local"],
+.ui.form .fields.ng-dirty.ng-invalid .field input[type="email"],
+.ui.form .fields.ng-dirty.ng-invalid .field input[type="number"],
+.ui.form .fields.ng-dirty.ng-invalid .field input[type="password"],
+.ui.form .fields.ng-dirty.ng-invalid .field input[type="search"],
+.ui.form .fields.ng-dirty.ng-invalid .field input[type="tel"],
+.ui.form .fields.ng-dirty.ng-invalid .field input[type="time"],
+.ui.form .fields.ng-dirty.ng-invalid .field input[type="text"],
+.ui.form .fields.ng-dirty.ng-invalid .field input[type="url"],
+.ui.form .field.ng-dirty.ng-invalid textarea,
+.ui.form .field.ng-dirty.ng-invalid select,
+.ui.form .field.ng-dirty.ng-invalid input:not([type]),
+.ui.form .field.ng-dirty.ng-invalid input[type="date"],
+.ui.form .field.ng-dirty.ng-invalid input[type="datetime-local"],
+.ui.form .field.ng-dirty.ng-invalid input[type="email"],
+.ui.form .field.ng-dirty.ng-invalid input[type="number"],
+.ui.form .field.ng-dirty.ng-invalid input[type="password"],
+.ui.form .field.ng-dirty.ng-invalid input[type="search"],
+.ui.form .field.ng-dirty.ng-invalid input[type="tel"],
+.ui.form .field.ng-dirty.ng-invalid input[type="time"],
+.ui.form .field.ng-dirty.ng-invalid input[type="text"],
+.ui.form .field.ng-dirty.ng-invalid input[type="url"] {
+	background: @formErrorBackground;
+	border-color: @formErrorBorder;
+	color: @formErrorColor;
+	border-radius: @inputErrorBorderRadius;
+	box-shadow: @inputErrorBoxShadow;
+}
+
+.ui.form .field.ng-dirty.ng-invalid textarea:focus,
+.ui.form .field.ng-dirty.ng-invalid select:focus,
+.ui.form .field.ng-dirty.ng-invalid input:not([type]):focus,
+.ui.form .field.ng-dirty.ng-invalid input[type="date"]:focus,
+.ui.form .field.ng-dirty.ng-invalid input[type="datetime-local"]:focus,
+.ui.form .field.ng-dirty.ng-invalid input[type="email"]:focus,
+.ui.form .field.ng-dirty.ng-invalid input[type="number"]:focus,
+.ui.form .field.ng-dirty.ng-invalid input[type="password"]:focus,
+.ui.form .field.ng-dirty.ng-invalid input[type="search"]:focus,
+.ui.form .field.ng-dirty.ng-invalid input[type="tel"]:focus,
+.ui.form .field.ng-dirty.ng-invalid input[type="time"]:focus,
+.ui.form .field.ng-dirty.ng-invalid input[type="text"]:focus,
+.ui.form .field.ng-dirty.ng-invalid input[type="url"]:focus {
+	background: @inputErrorFocusBackground;
+	border-color: @inputErrorFocusBorder;
+	color: @inputErrorFocusColor;
+
+	-webkit-appearance: none;
+	box-shadow: @inputErrorFocusBoxShadow;
+}
+
+/* Preserve Native Select Stylings */
+.ui.form .field.ng-dirty.ng-invalid select {
+	-webkit-appearance: menulist-button;
+}
+
+/*------------------
+    Dropdown Error
+--------------------*/
+
+.ui.form .fields.ng-dirty.ng-invalid .field .ui.dropdown,
+.ui.form .fields.ng-dirty.ng-invalid .field .ui.dropdown .item,
+.ui.form .field.ng-dirty.ng-invalid .ui.dropdown,
+.ui.form .field.ng-dirty.ng-invalid .ui.dropdown .text,
+.ui.form .field.ng-dirty.ng-invalid .ui.dropdown .item {
+	background: @formErrorBackground;
+	color: @formErrorColor;
+}
+
+.ui.form .fields.ng-dirty.ng-invalid .field .ui.dropdown,
+.ui.form .field.ng-dirty.ng-invalid .ui.dropdown {
+	border-color: @formErrorBorder !important;
+}
+
+.ui.form .fields.ng-dirty.ng-invalid .field .ui.dropdown:hover,
+.ui.form .field.ng-dirty.ng-invalid .ui.dropdown:hover {
+	border-color: @formErrorBorder !important;
+}
+
+.ui.form .fields.ng-dirty.ng-invalid .field .ui.dropdown:hover .menu,
+.ui.form .field.ng-dirty.ng-invalid .ui.dropdown:hover .menu {
+	border-color: @formErrorBorder;
+}
+
+.ui.form .fields.ng-dirty.ng-invalid .field .ui.multiple.selection.dropdown > .label,
+.ui.form .field.ng-dirty.ng-invalid .ui.multiple.selection.dropdown > .label {
+	background-color: @dropdownErrorLabelBackground;
+	color: @dropdownErrorLabelColor;
+}
+
+/* Hover */
+.ui.form .fields.ng-dirty.ng-invalid .field .ui.dropdown .menu .item:hover,
+.ui.form .field.ng-dirty.ng-invalid .ui.dropdown .menu .item:hover {
+	background-color: @dropdownErrorHoverBackground;
+}
+
+/* Selected */
+.ui.form .fields.ng-dirty.ng-invalid .field .ui.dropdown .menu .selected.item,
+.ui.form .field.ng-dirty.ng-invalid .ui.dropdown .menu .selected.item {
+	background-color: @dropdownErrorSelectedBackground;
+}
+
+/* Active */
+.ui.form .fields.ng-dirty.ng-invalid .field .ui.dropdown .menu .active.item,
+.ui.form .field.ng-dirty.ng-invalid .ui.dropdown .menu .active.item {
+	background-color: @dropdownErrorActiveBackground !important;
+}
+
+/*--------------------
+    Checkbox Error
+---------------------*/
+
+.ui.form .fields.ng-dirty.ng-invalid .field .checkbox:not(.toggle):not(.slider) label,
+.ui.form .field.ng-dirty.ng-invalid .checkbox:not(.toggle):not(.slider) label,
+.ui.form .fields.ng-dirty.ng-invalid .field .checkbox:not(.toggle):not(.slider) .box,
+.ui.form .field.ng-dirty.ng-invalid .checkbox:not(.toggle):not(.slider) .box {
+	color: @formErrorColor;
+}
+
+.ui.form .fields.ng-dirty.ng-invalid .field .checkbox:not(.toggle):not(.slider) label:before,
+.ui.form .field.ng-dirty.ng-invalid .checkbox:not(.toggle):not(.slider) label:before,
+.ui.form .fields.ng-dirty.ng-invalid .field .checkbox:not(.toggle):not(.slider) .box:before,
+.ui.form .field.ng-dirty.ng-invalid .checkbox:not(.toggle):not(.slider) .box:before {
+	background: @formErrorBackground;
+	border-color: @formErrorBorder;
+}
+
+.ui.form .fields.ng-dirty.ng-invalid .field .checkbox label:after,
+.ui.form .field.ng-dirty.ng-invalid .checkbox label:after,
+.ui.form .fields.ng-dirty.ng-invalid .field .checkbox .box:after,
+.ui.form .field.ng-dirty.ng-invalid .checkbox .box:after {
+	color: @formErrorColor;
+}
+
+header {
+	position: relative;
+	z-index: 3;
+}
+
+main {
+	margin-top: 12px;
+}
+
+.ui {
+	&.segment {
+		&.b-main-menu {
+			border-radius: 0;
+		}
+	}
+}
+
+.b-boards {
+	.ui {
+		&.cards {
+			& > .card {
+				width: 360px;
+			}
+		}
+
+		&.card {
+		}
+	}
+}
+
+.b-board {
+	.ui {
+		&.vertical {
+			&.divider {
+				&::before,
+				&::after {
+					height: calc(100%);
+				}
+			}
+		}
+
+		.segment {
+			&:first-child,
+			&:last-child {
+				//margin: 0;
+				//padding: 0;
+			}
+		}
+	}
+}
+
+.b-modal-card {
+	.labels {
+		margin: 10px 0;
+
+		.label {
+			&:first-child {
+				margin-left: 0;
+			}
+		}
+	}
+
+	.ui {
+		&.header {
+			.ui {
+				&.label {
+					&.time-ago {
+						margin-left: 0;
+					}
+				}
+			}
+		}
+	}
+}

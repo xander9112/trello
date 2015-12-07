@@ -45,13 +45,13 @@
 					</div>
 				</div>
 			</div>
-			<div class="ui comments">
+			<div class="ui comments" ng-show="comments">
 				<h3 class="ui dividing header">Коментарии</h3>
 
 				<div class="comment" ng-repeat="comment in comments| orderBy:'-date'">
 					<a class="avatar">
 						<img ng-src="https://trello-avatars.s3.amazonaws.com/{{comment.memberCreator.avatarHash}}/170.png"
-							title="{{comment.memberCreator.fullName}}">
+						     title="{{comment.memberCreator.fullName}}">
 					</a>
 
 					<div class="content">
