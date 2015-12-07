@@ -1,12 +1,19 @@
 var gulp = require('gulp');
+var gulpif = require('gulp-if');
+var plumber = require('gulp-plumber');
 var imagemin = require('gulp-imagemin');
-var jpegtran = require('imagemin-jpegtran');
+var pngquant = require('imagemin-pngquant');
+
+var production = require('../gulpfile');
 
 gulp.task('images', function () {
     return gulp.src('site/src/images/**/*')
-        .pipe(imagemin({
+        .pipe(plumber())
+        .pipe(gulpif(production, imagemin({
             progressive: true,
-            use: [ jpegtran({ progressive: true }) ]
-        }))
+            svgoPlugins: [{removeViewBox: false}],
+            use: [pngquant()],
+            interlaced: true
+        })))
         .pipe(gulp.dest('site/assets/images/'));
 });

@@ -1,0 +1,61 @@
+header {
+	position: relative;
+	z-index: 3;
+}
+
+main {
+	margin-top: 12px;
+}
+
+.ui {
+	&.segment {
+		&.b-main-menu {
+			border-radius: 0;
+		}
+	}
+}
+
+.b-board {
+	.ui {
+		&.vertical {
+			&.divider {
+				&::before,
+				&::after {
+					height: calc(100%);
+				}
+			}
+		}
+
+		.segment {
+			&:first-child,
+			&:last-child {
+				//margin: 0;
+				//padding: 0;
+			}
+		}
+	}
+}
+
+.b-modal-card {
+	.labels {
+		margin: 10px 0;
+
+		.label {
+			&:first-child {
+				margin-left: 0;
+			}
+		}
+	}
+
+	.ui{
+		&.header {
+			.ui{
+				&.label {
+					&.time-ago {
+						margin-left: 0;
+					}
+				}
+			}
+		}
+	}
+}

@@ -1,37 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app="Application">
 <head>
-    <meta charset="UTF-8">
-    <title>Trello</title>
+	<!-- Standard Meta -->
+	<meta charset="utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="/site/assets/css/styles.css"/>
-
-    <script type="text/javascript" src="/site/assets/js/vendor.js"></script>
-    <script src="https://api.trello.com/1/client.js?key=704aca7341b39a5eb3287e7d941a99d0"></script>
-    <script type="text/javascript" src="/site/assets/js/app.js"></script>
+	<base href="/">
+	<title>Trello</title>
+	<link rel="stylesheet" type="text/css" href="/site/assets/css/style.css">
 </head>
 <body>
-<div class="application js-application">
-    <header></header>
-    <main role="main"></main>
-    <footer class="page-footer">
-        <div class="container">
-            <div class="row">
-                <div class="col l6 s12">
-                    <h5 class="white-text">Footer Content</h5>
-
-                    <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer
-                        content.</p>
-                </div>
-            </div>
-        </div>
-        <div class="footer-copyright">
-            <div class="container">
-                © 2015 Copyright Text
-            </div>
-        </div>
-    </footer>
-</div>
+<header>
+	<div class="ui inverted segment b-main-menu">
+		<div class="ui inverted secondary pointing menu">
+			<a ui-sref="/" ui-sref-active="active" class="item">Главная</a>
+			<a ui-sref="boards" ui-sref-active="active" class="item">Доски</a>
+			<div class="ui inverted secondary pointing right menu">
+				<a ui-sref="/" ui-sref-active="active" class="item">Пользователь</a>
+				<a ui-sref="logout" ui-sref-active="active" class="item">Logout</a>
+			</div>
+		</div>
+	</div>
+</header>
+<main role="main" ng-controller="MainController">
+	<div ui-view></div>
+	<div class="ui dimmer" ng-class="loadingPage ? 'active' : ''">
+		<div class="ui large text loader">Loading</div>
+	</div>
+</main>
+<footer></footer>
+<script type="text/javascript" src="/site/assets/js/vendor.js"></script>
+<script src="https://api.trello.com/1/client.js?key=704aca7341b39a5eb3287e7d941a99d0"></script>
+<script type="text/javascript" src="/site/assets/js/app.js"></script>
 </body>
 </html>

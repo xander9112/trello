@@ -1,0 +1,83 @@
+<div class="ui modal js-card-template b-modal-card">
+	<i class="close icon"></i>
+
+	<div class="header ui grid">
+		<div class="columns row">
+			<div class="twelve wide column">
+				{{card.name}}
+				<div class="labels">
+					<a class="ui label" ng-class="label.color" ng-repeat="label in card.labels">{{label.name}}</a>
+				</div>
+				<div class="ui label time-ago">
+					<i class="info icon"></i> <span am-time-ago="card.dateLastActivity"></span>
+				</div>
+			</div>
+			<div class="four wide column">
+				<img
+						class="ui left floated mini rounded image"
+						ng-repeat="member in card.members"
+						ng-src="https://trello-avatars.s3.amazonaws.com/{{member.avatarHash}}/170.png"
+						title="{{member.fullName}}">
+			</div>
+		</div>
+	</div>
+	<div class="content">
+		<div class="description">
+			<p marked="card.desc"></p>
+
+			<div class="ui divided items">
+				<div class="item" ng-repeat="cardAttachment in cardAttachments">
+					<div class="image">
+						<img ng-src="{{cardAttachment.previews[3].url}}">
+					</div>
+					<div class="content">
+						<a class="header">{{cardAttachment.name}}</a>
+
+						<div class="meta">
+							<span>Description</span>
+						</div>
+						<div class="description">
+							<p></p>
+						</div>
+						<div class="extra">
+							<a href="{{cardAttachment.url}}" download>Скачать</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="ui comments">
+				<h3 class="ui dividing header">Коментарии</h3>
+
+				<div class="comment" ng-repeat="comment in comments| orderBy:'-date'">
+					<a class="avatar">
+						<img ng-src="https://trello-avatars.s3.amazonaws.com/{{comment.memberCreator.avatarHash}}/170.png"
+							title="{{comment.memberCreator.fullName}}">
+					</a>
+
+					<div class="content">
+						<a class="author">{{comment.memberCreator.fullName}}</a>
+
+						<div class="metadata">
+							<span class="date" am-time-ago="comment.date"></span>
+						</div>
+						<div class="text">
+							{{comment.data.text}}
+						</div>
+						<div class="actions">
+							<a class="reply">Ответить</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="actions">
+		<div class="ui black deny button">
+			Nope
+		</div>
+		<div class="ui positive right labeled icon button">
+			Yep, that's me
+			<i class="checkmark icon"></i>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,32 @@
+<div class="ui cards" ng-show="cards">
+	<a ui-sref=".card({card: card.id})" class="ui card" ng-repeat="card in cards" ng-class="card.color">
+		<div class="content">
+			<div class="header">{{card.name}}</div>
+			<div class="meta" am-time-ago="card.dateLastActivity"></div>
+			<div class="description">
+				<div class="ui label">
+					<i class="icon attach"></i> {{card.badges.attachments}}
+				</div>
+				<div class="ui label">
+					<i class="icon checkmark box"></i> {{card.badges.checkItems}}/{{card.badges.checkItemsChecked}}
+				</div>
+				<div class="ui label">
+					<i class="icon comment"></i> {{card.badges.comments}}
+				</div>
+			</div>
+		</div>
+		<div class="extra content">
+			<div class="left floated">
+
+			</div>
+			<div class="right floated author" ng-repeat="member in card.members">
+				<img class="ui avatar image"
+				     ng-src="https://trello-avatars.s3.amazonaws.com/{{member.avatarHash}}/170.png"
+				     title="{{member.fullName}}">
+			</div>
+		</div>
+	</a>
+</div>
+
+<div ui-view></div>
+<h1 class="ui header" ng-hide="cards">0 карточек</h1>

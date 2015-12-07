@@ -1,9 +1,3 @@
-/.idea
-/site/configs/config.php
-/site/data/images
-/site/data/thumbnails
-/*/Thumbs.db
-/Thumbs.db
-/node_modules
-/site/assets/.gitignore
-/site/assets/fonts/.gitignore
+node_modules
+.idea/
+

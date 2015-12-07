@@ -1,0 +1,28 @@
+<div class="ui grid">
+	<div class="row">
+		<div ui-view="create"></div>
+		<div class="ui right floated basic green button js-button-create" ng-click="CreateBoard($event)">
+			<i class="icon user"></i>
+			Создать
+		</div>
+	</div>
+	<div class="row">
+		<div class="ui cards">
+			<a class="ui card" ui-sref="/:board({board: board.shortLink})" ng-repeat="board in boards" ng-if="!board.closed || showClosed">
+				<div class="content">
+					<div class="header">{{board.name}}</div>
+					<div class="meta">
+						<span class="category"></span>
+					</div>
+					<div class="description">
+						<p>{{board.desc}}</p>
+					</div>
+				</div>
+				<div class="extra content">
+					<div class="right floated author"></div>
+				</div>
+			</a>
+		</div>
+
+	</div>
+</div>

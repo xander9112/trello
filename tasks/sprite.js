@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var plugin = require('gulp-load-plugins')();
 var spritesmith = require('gulp.spritesmith');
 
 gulp.task('sprite', function () {
