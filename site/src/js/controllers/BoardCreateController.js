@@ -1,4 +1,4 @@
-var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames, DefaultLists) {
+var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames, DefaultLists, $interval) {
 	"use strict";
 
 	$scope.CreateBoard = function (event) {
@@ -19,6 +19,24 @@ var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames,
 			});
 	};
 
+	$scope.CreatingBoard = '';
+	$scope.standartSettings = false;
+	$scope.loading = 0;
+	$scope.loadingText = 'Загрузка';
+
+	$scope.completed = {
+		length: 0,
+		count:  0
+	};
+
+	$scope.$watchCollection('completed', function (newValue) {
+		console.log(newValue);
+	});
+
+	$scope.updateProgressBar = function (length, count) {
+
+	};
+
 	$scope.SaveBoard = function (event) {
 		var board = new TrelloFactory.boards.self();
 
@@ -28,40 +46,45 @@ var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames,
 			board.name = form.boardName.$viewValue;
 
 			board.$save().then(function (data) {
-				TrelloFactory.boards.labels.query({ id: data.id }).$promise.then(function (data) {
-					angular.forEach(data, function (value) {
-						var NewLabel = new TrelloFactory.labels.id({ idLabel: value.id });
-						NewLabel.$delete();
+
+				if (form.standartSettings) {
+					TrelloFactory.boards.labels.query({ id: data.id }).$promise.then(function (data) {
+						angular.forEach(data, function (value) {
+							var NewLabel = new TrelloFactory.labels.id({ idLabel: value.id });
+							NewLabel.$delete().then(function () {
+								$scope.completed.length = data.length;
+								$scope.completed.count++;
+							});
+						});
 					});
-				});
 
-				TrelloFactory.boards.lists.query({ id: data.id }).$promise.then(function (data) {
-					angular.forEach(data, function (value) {
-						var List = new TrelloFactory.lists.listsClosed({ idList: value.id });
-						List.value = true;
-						List.$update();
+					TrelloFactory.boards.lists.query({ id: data.id }).$promise.then(function (data) {
+						angular.forEach(data, function (value) {
+							var List = new TrelloFactory.lists.listsClosed({ idList: value.id });
+							List.value = true;
+							List.$update();
+						});
 					});
-				});
 
+					angular.forEach(LabelNames, function (value, key) {
+						if (LabelNames[key] !== '') {
+							var NewLabel = new TrelloFactory.boards.labels({ id: data.id });
 
-				angular.forEach(LabelNames, function (value, key) {
-					if (LabelNames[ key ] !== '') {
-						var NewLabel = new TrelloFactory.boards.labels({ id: data.id });
+							NewLabel.name = value;
+							NewLabel.color = key;
 
-						NewLabel.name = value;
-						NewLabel.color = key;
+							NewLabel.$save();
+						}
+					});
 
-						NewLabel.$save();
-					}
-				});
+					angular.forEach(DefaultLists, function (value) {
+						var newList = new TrelloFactory.boards.lists({ id: data.id });
+						newList.name = value.name;
+						newList.pos = value.pos;
 
-				angular.forEach(DefaultLists, function (value) {
-					var newList = new TrelloFactory.boards.lists({ id: data.id });
-					newList.name = value.name;
-					newList.pos = value.pos;
-
-					newList.$save();
-				});
+						newList.$save();
+					});
+				}
 			});
 		} else {
 		}

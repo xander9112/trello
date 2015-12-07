@@ -1,89 +1,113 @@
-/**
- * The angular tabs module
- * @author: nerv
- * @version: 0.2.5, 2012-08-25
- */
 'use strict';
 
-(function (angular) {
+(function () {
+	'use strict';
 
-    'use strict';
+	angular.module('semantic.ui.components.checkbox', []).directive('smCheckbox', smCheckbox);
 
-    angular.module('tabs', []);
+	function smCheckbox() {
+		return {
+			restrict: 'E',
+			require: '?ngModel',
+			transclude: true,
+			replace: true,
+			template: '<div class="ui checkbox">' + '<input type="checkbox">' + '<label></label>' + '</div>',
 
-    angular.module('tabs').directive('ngTabs', ngTabsDirective);
+			link: function link(scope, element, attrs, ngModel, transclude) {
 
-    function ngTabsDirective() {
-        return {
-            scope: true,
-            restrict: 'EAC',
-            controller: ngTabsController
-        };
-    }
+				var checked = false;
+				var disabled = false;
+				var input = element.find('input');
 
-    function ngTabsController($scope) {
-        $scope.tabs = {
-            index: 0,
-            count: 0
-        };
+				transclude(scope, function (nodes) {
+					element.find('label').append(nodes);
+				});
 
-        this.headIndex = 0;
-        this.bodyIndex = 0;
+				element.on('click', toggleFn);
 
-        this.getTabHeadIndex = function () {
-            return $scope.tabs.count = ++this.headIndex;
-        };
+				if (!ngModel) {
+					throw new Error('Semantic-UI-Angular: The \'smCheckbox\' directive requires a \'ng-model\' value');
+				}
 
-        this.getTabBodyIndex = function () {
-            return ++this.bodyIndex;
-        };
-    }
+				ngModel.$render = function () {
+					checked = ngModel.$viewValue;
+					input.prop('checked', checked);
 
-    ngTabsController.$inject = ['$scope'];
+					if (angular.isDefined(attrs.name)) {
+						input.attr('name', attrs.name);
+					}
+				};
 
-    angular.module('tabs').directive('ngTabHead', ngTabHeadDirective);
+				scope.$watch(attrs.ngDisabled, function (val) {
+					disabled = val || false;
+					input.attr('disabled', disabled);
+				});
 
-    function ngTabHeadDirective() {
-        return {
-            scope: false,
-            restrict: 'EAC',
-            require: '^ngTabs',
-            link: function link(scope, element, attributes, controller) {
-                var index = controller.getTabHeadIndex();
-                var value = attributes.ngTabHead;
-                var active = /[-*\/%^=!<>&|]/.test(value) ? scope.$eval(value) : !!value;
+				if (attrs.toggle !== void 0) {
+					element.addClass('toggle');
+				} else if (attrs.slider !== void 0) {
+					element.addClass('slider');
+				}
 
-                scope.tabs.index = scope.tabs.index || (active ? index : null);
+				if (attrs.ariaLabel === void 0) {
+					element.attr('aria-label', element[0].textContent.trim());
+				}
 
-                element.bind('click', function () {
-                    scope.tabs.index = index;
-                    scope.$$phase || scope.$apply();
-                });
+				function toggleFn() {
 
-                scope.$watch('tabs.index', function () {
-                    element.toggleClass('active', scope.tabs.index === index);
-                });
-            }
-        };
-    }
+					if (disabled) {
+						return;
+					}
 
-    angular.module('tabs').directive('ngTabBody', ngTabBodyDirective);
+					checked = !checked;
+					input.prop('checked', checked);
+					ngModel.$setViewValue(checked);
+					scope.$apply();
+				}
+			}
+		};
+	}
+})();
+'use strict';
 
-    function ngTabBodyDirective() {
-        return {
-            scope: false,
-            restrict: 'EAC',
-            require: '^ngTabs',
-            link: function link(scope, element, attributes, controller) {
-                var index = controller.getTabBodyIndex();
+(function () {
+	'use strict';
 
-                scope.$watch('tabs.index', function () {
-                    element.toggleClass(attributes.ngTabBody + ' active', scope.tabs.index === index);
-                });
-            }
-        };
-    }
-})(angular);
+	angular.module('semantic.ui.components.progressBar', []).directive('smProgressBar', smProgressBar);
+
+	function smProgressBar() {
+		return {
+			restrict: 'E',
+			require: '?ngModel',
+			transclude: true,
+			replace: true,
+			template: '\n\t\t\t\t<div class="ui active progress">\n\t\t\t\t\t<div class="bar">\n\t\t\t\t\t\t<div class="progress"></div>\n\t\t\t\t\t</div>\n\t\t\t\t\t<div class="label"></div>\n\t\t\t\t</div>',
+
+			link: function link(scope, element, attrs, ngModel, transclude) {
+				var bar = element.find('.bar');
+				var progress = bar.find('.progress');
+
+				transclude(scope, function (nodes) {
+					element.find('label').append(nodes);
+				});
+
+				if (!ngModel) {
+					throw new Error('Semantic-UI-Angular: The \'smProgressBar\' directive requires a \'ng-model\' value');
+				}
+
+				ngModel.$render = function () {
+					bar.attr('style', 'width: ' + ngModel.$viewValue + '%');
+					progress.text(ngModel.$viewValue + '%');
+				};
+
+				scope.$watch(ngModel.$viewValue, function (val) {
+					bar.attr('style', 'width: ' + ngModel.$viewValue + '%');
+					progress.text(ngModel.$viewValue + '%');
+				});
+			}
+		};
+	}
+})();
 'use strict';
 
 var TrelloFactory = function TrelloFactory($resource, $localStorage) {
@@ -357,6 +381,9 @@ var repeatDone = function repeatDone() {
 };
 "use strict";
 
+var Semantic = {};
+"use strict";
+
 var BoardController = function BoardController($scope, $state, TrelloFactory) {
 	"use strict";
 
@@ -370,7 +397,7 @@ var BoardController = function BoardController($scope, $state, TrelloFactory) {
 };
 'use strict';
 
-var BoardCreateController = function BoardCreateController($scope, $state, TrelloFactory, LabelNames, DefaultLists) {
+var BoardCreateController = function BoardCreateController($scope, $state, TrelloFactory, LabelNames, DefaultLists, $interval) {
 	"use strict";
 
 	$scope.CreateBoard = function (event) {
@@ -388,6 +415,22 @@ var BoardCreateController = function BoardCreateController($scope, $state, Trell
 		});
 	};
 
+	$scope.CreatingBoard = '';
+	$scope.standartSettings = false;
+	$scope.loading = 0;
+	$scope.loadingText = '��������';
+
+	$scope.completed = {
+		length: 0,
+		count: 0
+	};
+
+	$scope.$watchCollection('completed', function (newValue) {
+		console.log(newValue);
+	});
+
+	$scope.updateProgressBar = function (length, count) {};
+
 	$scope.SaveBoard = function (event) {
 		var board = new TrelloFactory.boards.self();
 
@@ -397,39 +440,45 @@ var BoardCreateController = function BoardCreateController($scope, $state, Trell
 			board.name = form.boardName.$viewValue;
 
 			board.$save().then(function (data) {
-				TrelloFactory.boards.labels.query({ id: data.id }).$promise.then(function (data) {
-					angular.forEach(data, function (value) {
-						var NewLabel = new TrelloFactory.labels.id({ idLabel: value.id });
-						NewLabel.$delete();
+
+				if (form.standartSettings) {
+					TrelloFactory.boards.labels.query({ id: data.id }).$promise.then(function (data) {
+						angular.forEach(data, function (value) {
+							var NewLabel = new TrelloFactory.labels.id({ idLabel: value.id });
+							NewLabel.$delete().then(function () {
+								$scope.completed.length = data.length;
+								$scope.completed.count++;
+							});
+						});
 					});
-				});
 
-				TrelloFactory.boards.lists.query({ id: data.id }).$promise.then(function (data) {
-					angular.forEach(data, function (value) {
-						var List = new TrelloFactory.lists.listsClosed({ idList: value.id });
-						List.value = true;
-						List.$update();
+					TrelloFactory.boards.lists.query({ id: data.id }).$promise.then(function (data) {
+						angular.forEach(data, function (value) {
+							var List = new TrelloFactory.lists.listsClosed({ idList: value.id });
+							List.value = true;
+							List.$update();
+						});
 					});
-				});
 
-				angular.forEach(LabelNames, function (value, key) {
-					if (LabelNames[key] !== '') {
-						var NewLabel = new TrelloFactory.boards.labels({ id: data.id });
+					angular.forEach(LabelNames, function (value, key) {
+						if (LabelNames[key] !== '') {
+							var NewLabel = new TrelloFactory.boards.labels({ id: data.id });
 
-						NewLabel.name = value;
-						NewLabel.color = key;
+							NewLabel.name = value;
+							NewLabel.color = key;
 
-						NewLabel.$save();
-					}
-				});
+							NewLabel.$save();
+						}
+					});
 
-				angular.forEach(DefaultLists, function (value) {
-					var newList = new TrelloFactory.boards.lists({ id: data.id });
-					newList.name = value.name;
-					newList.pos = value.pos;
+					angular.forEach(DefaultLists, function (value) {
+						var newList = new TrelloFactory.boards.lists({ id: data.id });
+						newList.name = value.name;
+						newList.pos = value.pos;
 
-					newList.$save();
-				});
+						newList.$save();
+					});
+				}
 			});
 		} else {}
 
@@ -733,7 +782,7 @@ var DefaultLists = [{
 }];
 'use strict';
 
-var App = angular.module('Application', ['ngResource', 'ui.router', 'ngStorage', 'angularMoment', 'hc.marked', 'ngWebsocket'], function ($httpProvider) {
+var App = angular.module('Application', ['ngResource', 'ui.router', 'ngStorage', 'angularMoment', 'hc.marked', 'ngWebsocket', 'semantic.ui.components.checkbox', 'semantic.ui.components.progressBar'], function ($httpProvider) {
 	"use strict";
 	$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 	$httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';

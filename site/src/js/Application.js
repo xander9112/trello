@@ -5,11 +5,13 @@ var App = angular.module('Application',
 		'ngStorage',
 		'angularMoment',
 		'hc.marked',
-		'ngWebsocket'
+		'ngWebsocket',
+		'semantic.ui.components.checkbox',
+		'semantic.ui.components.progressBar'
 	], function ($httpProvider) {
 		"use strict";
-		$httpProvider.defaults.headers.post[ 'Content-Type' ] = 'application/x-www-form-urlencoded;charset=utf-8';
-		$httpProvider.defaults.headers.put[ 'Content-Type' ] = 'application/x-www-form-urlencoded;charset=utf-8';
+		$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
+		$httpProvider.defaults.headers.put['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 		$httpProvider.defaults.transformRequest = [
 			function (data) {
 				var param = function (obj) {
@@ -17,24 +19,24 @@ var App = angular.module('Application',
 					var name, value, fullSubName, subValue, innerObj, i;
 
 					for (name in obj) {
-						value = obj[ name ];
+						value = obj[name];
 
 						if (value instanceof Array) {
 							for (i = 0; i < value.length; ++i) {
-								subValue = value[ i ];
+								subValue = value[i];
 								fullSubName = name + '[' + i + ']';
 								innerObj = {};
-								innerObj[ fullSubName ] = subValue;
+								innerObj[fullSubName] = subValue;
 								query += param(innerObj) + '&';
 							}
 						}
 						else if (value instanceof Object) {
 							for (var subName in value) {
 								if (value.hasOwnProperty(subName) && subName !== '$$hashKey') {
-									subValue = value[ subName ];
+									subValue = value[subName];
 									fullSubName = name + '[' + subName + ']';
 									innerObj = {};
-									innerObj[ fullSubName ] = subValue;
+									innerObj[fullSubName] = subValue;
 									query += param(innerObj) + '&';
 								}
 							}
@@ -62,7 +64,6 @@ App.config(function ($resourceProvider) {
 	//console.log($resourceProvider);
 	$resourceProvider.defaults.stripTrailingSlashes = false;
 });
-
 
 /**
  * green - Backend

@@ -8,19 +8,22 @@
 		<div class="description">
 			<div class="ui inverted segment">
 				<form name="CreatingBoard" novalidate
-				      class="ui inverted form"
-				      ng-submit="SaveBoard($event)">
+					class="ui inverted form"
+					ng-submit="SaveBoard($event)">
 					<div class="field"
-					     ng-class="CreatingBoard.boardName.$invalid && CreatingBoard.boardName.$dirty ? 'ng-dirty ng-invalid' : ''">
+						ng-class="CreatingBoard.boardName.$invalid && CreatingBoard.boardName.$dirty ? 'ng-dirty ng-invalid' : ''">
 						<label>Название</label>
 						<input type="text"
-						       ng-class="CreatingBoard.boardName.$invalid ? 'error' : ''"
-						       name="boardName"
-						       placeholder="Название"
-						       min="3"
-						       max="16384"
-						       ng-model="boardName"
-						       required>
+							ng-class="CreatingBoard.boardName.$invalid ? 'error' : ''"
+							name="boardName"
+							placeholder="Название"
+							min="3"
+							max="16384"
+							ng-model="boardName"
+							required>
+					</div>
+					<div class="field">
+						<sm-checkbox name="standartSettings" ng-model="standartSettings">Установить стандартные настройки</sm-checkbox>
 					</div>
 					<div class="ui error message" ng-show="CreatingBoard.boardName.$error.required">
 						<div class="header">Ошибка</div>
@@ -32,6 +35,7 @@
 							<label>Стандартная доска</label>
 						</div>
 					</div>-->
+					<sm-progress-bar ng-model="loading">{{loadingText}}</sm-progress-bar>
 					<button class="ui button" type="submit">Создать</button>
 				</form>
 			</div>
