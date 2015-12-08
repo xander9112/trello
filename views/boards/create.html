@@ -6,51 +6,65 @@
 	</div>
 	<div class="content">
 		<div class="description">
-			<div class="ui inverted segment">
+			<div class="ui inverted segment" ng-hide="successCreating.created">
 				<form name="CreatingBoard" novalidate
-					class="ui inverted form"
-					ng-submit="SaveBoard($event)">
+				      class="ui inverted form"
+				      ng-submit="SaveBoard($event)">
 					<div class="field"
-						ng-class="CreatingBoard.boardName.$invalid && CreatingBoard.boardName.$dirty ? 'ng-dirty ng-invalid' : ''">
+					     ng-class="CreatingBoard.boardName.$invalid && CreatingBoard.boardName.$dirty ? 'ng-dirty ng-invalid' : ''">
 						<label>Название</label>
 						<input type="text"
-							ng-class="CreatingBoard.boardName.$invalid ? 'error' : ''"
-							name="boardName"
-							placeholder="Название"
-							min="3"
-							max="16384"
-							ng-model="boardName"
-							required>
+						       ng-class="CreatingBoard.boardName.$invalid ? 'error' : ''"
+						       name="boardName"
+						       placeholder="Название"
+						       min="3"
+						       max="16384"
+						       ng-model="boardName"
+						       required>
 					</div>
 					<div class="field">
-						<sm-checkbox name="standartSettings" ng-model="standartSettings">Установить стандартные настройки</sm-checkbox>
+						<sm-checkbox name="standartSettings" ng-model="standartSettings">Установить стандартные
+							настройки
+						</sm-checkbox>
 					</div>
 					<div class="ui error message" ng-show="CreatingBoard.boardName.$error.required">
 						<div class="header">Ошибка</div>
 						<p>Название таблицы не может быть меньше 1 символа</p>
 					</div>
-					<!--<div class="field">
-						<div class="ui checkbox">
-							<input type="checkbox" name="standart" ng-model="standart" tabindex="0" class="hidden">
-							<label>Стандартная доска</label>
-						</div>
-					</div>-->
-					<sm-progress-bar ng-model="loading">{{loadingText}}</sm-progress-bar>
+					<sm-progress-bar
+							ng-show="CreatingBoard.standartSettings.$viewValue"
+							ng-model="loading"
+							ng-class="loading === 100 ? 'success' : ''">
+						<span>{{loadingText}}</span>
+					</sm-progress-bar>
 					<button class="ui button" type="submit">Создать</button>
 				</form>
+			</div>
+			<div class="ui inverted vertical masthead center aligned segment" ng-show="successCreating.created">
+				<div class="ui text container">
+					<h1 class="ui inverted header">
+						Доска успешно создана
+					</h1>
+
+					<h2>{{successCreating.boardName}}</h2>
+					<br>
+
+					<div class="actions">
+						<a ui-sref="/:board({board: successCreating.boardUrl})"
+						   class="ui huge primary button ok">
+							Перейти к доске <i class="right arrow icon"></i>
+						</a>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 	<div class="actions">
-		<div class="two fluid ui inverted buttons">
-			<div class="ui red basic inverted button">
+		<div class="two fluid ui inverted buttons" ng-hide="successCreating.created">
+			<div class="ui red basic inverted button cancel">
 				<i class="remove icon"></i>
 				Отмена
 			</div>
 		</div>
 	</div>
-</div>
-<div class="ui right floated basic green button js-button-create" ng-click="CreateBoard($event)">
-	<i class="icon user"></i>
-	Создать
 </div>

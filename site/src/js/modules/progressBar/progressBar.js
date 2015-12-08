@@ -13,7 +13,7 @@
 			transclude: true,
 			replace:    true,
 			template:   `
-				<div class="ui active progress">
+				<div class="ui inverted progress">
 					<div class="bar">
 						<div class="progress"></div>
 					</div>
@@ -25,7 +25,7 @@
 				var progress = bar.find('.progress');
 
 				transclude(scope, function (nodes) {
-					element.find('label').append(nodes);
+					element.find('.label').append(nodes);
 				});
 
 				if (!ngModel) {
@@ -40,6 +40,12 @@
 				scope.$watch(ngModel.$viewValue, function (val) {
 					bar.attr('style', `width: ${ngModel.$viewValue}%`);
 					progress.text(`${ngModel.$viewValue}%`);
+
+					if (ngModel.$viewValue === 100) {
+						element.addClass('success');
+					} else {
+						element.removeClass('success');
+					}
 				});
 			}
 		};

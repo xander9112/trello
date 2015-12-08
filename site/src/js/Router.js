@@ -13,6 +13,11 @@ var Router = function ($stateProvider, $urlRouterProvider, $locationProvider) {
 			templateUrl: '/views/UserPage.html',
 			controller:  'UserController'
 		})
+		.state('boards-create', {
+			url:         '/boards-create',
+			templateUrl: '/views/boards/create.html',
+			controller:  'BoardCreateController'
+		})
 		.state('boards', {
 			url:   '/boards',
 			views: {
