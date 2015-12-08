@@ -23,8 +23,8 @@
 						       required>
 					</div>
 					<div class="field">
-						<sm-checkbox name="standartSettings" ng-model="standartSettings">Установить стандартные
-							настройки
+						<sm-checkbox name="standartSettings" ng-model="standartSettings">
+							Установить стандартные настройки
 						</sm-checkbox>
 					</div>
 					<div class="ui error message" ng-show="CreatingBoard.boardName.$error.required">
@@ -33,9 +33,9 @@
 					</div>
 					<sm-progress-bar
 							ng-show="CreatingBoard.standartSettings.$viewValue"
-							ng-model="loading"
-							ng-class="loading === 100 ? 'success' : ''">
-						<span>{{loadingText}}</span>
+							ng-model="progressBar.loading"
+							ng-class="progressBar.loading === 100 ? 'success' : ''">
+						<span>{{progressBar.loadingText}}</span>
 					</sm-progress-bar>
 					<button class="ui button" type="submit">Создать</button>
 				</form>

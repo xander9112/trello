@@ -3,7 +3,7 @@ var CardTemplate = function () {
 
 	return {
 		replace:     true,
-		templateUrl: '/views/boards/board/list/card/template.html',
+		templateUrl: '/views/boards/board/list/card/index.html',
 		controller:  CardController
 	}
 };

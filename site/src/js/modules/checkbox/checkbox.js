@@ -13,9 +13,9 @@
 			transclude: true,
 			replace:    true,
 			template:   '<div class="ui checkbox">' +
-						'<input type="checkbox">' +
-						'<label></label>' +
-						'</div>',
+			            '<input type="checkbox">' +
+			            '<label></label>' +
+			            '</div>',
 
 			link: function (scope, element, attrs, ngModel, transclude) {
 
@@ -35,6 +35,11 @@
 
 				ngModel.$render = function () {
 					checked = ngModel.$viewValue;
+
+					if (!angular.isDefined(checked)) {
+						checked = false;
+					}
+
 					input.prop('checked', checked);
 
 					if (angular.isDefined(attrs.name)) {
@@ -55,7 +60,7 @@
 				}
 
 				if (attrs.ariaLabel === void 0) {
-					element.attr('aria-label', element[0].textContent.trim());
+					element.attr('aria-label', element[ 0 ].textContent.trim());
 				}
 
 				function toggleFn () {

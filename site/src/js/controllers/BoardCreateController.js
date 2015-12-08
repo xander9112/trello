@@ -1,10 +1,6 @@
 var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames, DefaultLists, $timeout) {
 	"use strict";
-	//$scope.CreateBoard = function (event) {
-	//	event.preventDefault();
-
-	angular
-		.element('.js-modal-create')
+	angular.element('.js-modal-create')
 		.modal('show')
 		.modal({
 			observeChanges: true,
@@ -16,13 +12,18 @@ var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames,
 			}
 
 		});
-	//};
 
+
+	/**
+	 * FormName
+	 * @type {string}
+	 */
 	$scope.CreatingBoard = '';
-	$scope.standartSettings = false;
-	$scope.loading = 0;
-	$scope.loadingText = 'Удаление стандартных лэйблов';
 
+	$scope.progressBar = {
+		loading:     0,
+		loadingText: ''
+	};
 
 	$scope.successCreating = {
 		created:   false,
@@ -42,14 +43,9 @@ var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames,
 	});
 
 	$scope.updateProgressBar = function (completed) {
-		if (completed.length === 0) {
-			$scope.loading = 0;
-		} else {
-			$scope.loading = parseInt(completed.count / completed.length) * 100;
-		}
+		$scope.progressBar.loading === 0 ? 0 : parseInt(completed.count / completed.length) * 100;
 
 		if ($scope.loading === 100) {
-
 			$timeout(function () {
 				$scope.$emit(`loadingFinish-${completed.type}`);
 			}, 500);
@@ -57,18 +53,21 @@ var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames,
 	};
 
 	$scope.SaveBoard = function (event) {
-		var board = new TrelloFactory.boards.self();
+		event.preventDefault();
 
+		var NewBoard = new TrelloFactory.boards.self();
 		var form = $scope.CreatingBoard;
 
 		if (form.$valid) {
-			board.name = form.boardName.$viewValue;
+			NewBoard.name = form.boardName.$viewValue;
 
-			board.$save().then(function (data) {
+			NewBoard.$save().then(function (data) {
 				$scope.successCreating.boardName = data.name;
 				$scope.successCreating.boardUrl = data.shortLink;
 
 				if (form.standartSettings.$viewValue) {
+					$scope.progressBar.loadingText = 'Удаление стандартных лэйблов';
+
 					TrelloFactory.boards.labels.query({ id: data.id }).$promise.then(function (data) {
 						if (data.length) {
 							angular.forEach(data, function (value) {
@@ -86,7 +85,7 @@ var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames,
 					});
 
 					$scope.$on('loadingFinish-labels', function () {
-						$scope.loadingText = 'Удаление стандартных листов';
+						$scope.progressBar.loadingText = 'Удаление стандартных листов';
 
 						TrelloFactory.boards.lists.query({ id: data.id }).$promise.then(function (data) {
 							$scope.completed.type = 'lists';
@@ -96,10 +95,10 @@ var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames,
 								$scope.completed.count = 0;
 
 								angular.forEach(data, function (value) {
-									var List = new TrelloFactory.lists.listsClosed({ idList: value.id });
-									List.value = true;
+									var NewList = new TrelloFactory.lists.listsClosed({ idList: value.id });
+									NewList.value = true;
 
-									List.$update().then(function () {
+									NewList.$update().then(function () {
 										$scope.completed.length = data.length;
 										$scope.completed.count++;
 									});
@@ -112,10 +111,13 @@ var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames,
 					});
 
 					$scope.$on('loadingFinish-lists', function () {
-						$scope.loadingText = 'Создание лэйблов';
-						$scope.completed.length = _.size(_.filter(LabelNames, function (n) {
+						$scope.progressBar.loadingText = 'Создание лэйблов';
+
+						let notEmptyLabelNames = _.filter(LabelNames, function (n) {
 							return n !== '';
-						}));
+						});
+
+						$scope.completed.length = _.size(notEmptyLabelNames);
 						$scope.completed.count = 0;
 						$scope.completed.type = 'CreateLabels';
 
@@ -127,7 +129,6 @@ var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames,
 								NewLabel.color = key;
 
 								NewLabel.$save().then(function () {
-									//$scope.completed.length = _.size(LabelNames);
 									$scope.completed.count++;
 								});
 							}
@@ -135,32 +136,30 @@ var BoardCreateController = function ($scope, $state, TrelloFactory, LabelNames,
 					});
 
 					$scope.$on('loadingFinish-CreateLabels', function () {
-						$scope.loadingText = 'Создание листов';
+						$scope.progressBar.loadingText = 'Создание листов';
 						$scope.completed.length = _.size(DefaultLists);
 						$scope.completed.count = 0;
 						$scope.completed.type = 'CreateLists';
 
 						angular.forEach(DefaultLists, function (value) {
-							var newList = new TrelloFactory.boards.lists({ id: data.id });
-							newList.name = value.name;
-							newList.pos = value.pos;
+							var NewList = new TrelloFactory.boards.lists({ id: data.id });
+							NewList.name = value.name;
+							NewList.pos = value.pos;
 
-							newList.$save().then(function () {
-								//$scope.completed.length = DefaultLists.length;
+							NewList.$save().then(function () {
 								$scope.completed.count++;
 							});
 						});
 					});
 
 					$scope.$on('loadingFinish-CreateLists', function () {
-						$scope.loadingText = 'Завершено';
+						$scope.progressBar.loadingText = 'Завершено';
 						$scope.successCreating.created = true;
 					});
 				} else {
 					$scope.successCreating.created = true;
 				}
 			});
-		} else {
 		}
 	};
 };

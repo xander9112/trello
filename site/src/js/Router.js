@@ -22,7 +22,7 @@ var Router = function ($stateProvider, $urlRouterProvider, $locationProvider) {
 			url:   '/boards',
 			views: {
 				'':              {
-					templateUrl: '/views/boards/template.html',
+					templateUrl: '/views/boards/index.html',
 					controller:  'BoardsController'
 				},
 				'create@boards': {
@@ -33,12 +33,12 @@ var Router = function ($stateProvider, $urlRouterProvider, $locationProvider) {
 		})
 		.state('/:board', {
 			url:         '/boards/:board',
-			templateUrl: '/views/boards/board/template.html',
+			templateUrl: '/views/boards/board/index.html',
 			controller:  'BoardController'
 		})
 		.state('/:board.list', {
 			url:         '/:list',
-			templateUrl: '/views/boards/board/list/template.html',
+			templateUrl: '/views/boards/board/list/index.html',
 			controller:  'ListController'
 		})
 		.state('/:board.list.card', {
