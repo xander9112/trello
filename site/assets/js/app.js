@@ -200,10 +200,10 @@ var TrelloFactory = function TrelloFactory($resource, $localStorage) {
    */
 
 		boards: {
-			self: $resource('testJson.json'),
-			/*			self:       resource('boards', {}, {
-    method: 'POST'
-    }),*/
+			//self:       $resource('testJson.json'),
+			self: resource('boards', {}, {
+				method: 'POST'
+			}),
 			id: resource('boards/:id', { id: '@id' }),
 			field: resource('boards/:id/:field'),
 			actions: resource('boards/:id/actions'),
